@@ -9,20 +9,12 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             background: #1a0000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            height: 100%;
-            width: 100%;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; height: 100%; width: 100%;
             font-family: 'Segoe UI', sans-serif;
-            padding: 4px;
-            margin: 0;
-            overflow: hidden;
-            position: fixed;
-            top: 0; left: 0;
-            touch-action: none;
-            user-select: none;
+            padding: 4px; margin: 0; overflow: hidden;
+            position: fixed; top: 0; left: 0;
+            touch-action: none; user-select: none;
         }
         .splash {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -41,10 +33,7 @@
             50% { transform: scale(1.2); opacity: 1; }
         }
         .splash-content { text-align: center; z-index: 2; padding: 20px; animation: splashFadeIn 1s ease-out; }
-        @keyframes splashFadeIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        @keyframes splashFadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
         .splash-crown {
             font-size: 60px; color: #ffd700;
             text-shadow: 0 0 30px #ffd700, 0 0 60px #ff8c00;
@@ -61,11 +50,7 @@
             text-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00, 0 4px 0 #8b0000, 0 8px 20px rgba(0,0,0,0.8);
             margin: 10px 0;
         }
-        .splash-line {
-            width: 200px; height: 3px;
-            background: linear-gradient(90deg, transparent, #ffd700, transparent);
-            margin: 15px auto; box-shadow: 0 0 20px #ffd700;
-        }
+        .splash-line { width: 200px; height: 3px; background: linear-gradient(90deg, transparent, #ffd700, transparent); margin: 15px auto; box-shadow: 0 0 20px #ffd700; }
         .splash-subtitle { color: #ffd700; font-size: 14px; opacity: 0.8; margin-bottom: 30px; letter-spacing: 2px; }
         .splash-btn {
             font-family: 'Orbitron', sans-serif;
@@ -144,50 +129,44 @@
         }
         .main-menu {
             display: grid; grid-template-columns: 1fr 1fr;
-            gap: 14px; padding: 10px 14px 0;
+            gap: 10px; padding: 8px 16px 0;
             align-content: center; justify-items: center;
             position: relative; z-index: 1;
         }
         .game-btn {
-            width: 125px; height: 125px;
+            width: 100px; height: 100px;
             background: linear-gradient(145deg, #ffd700, #ff8c00, #b8860b);
             color: #4a0000; border: 3px solid #fff59d;
-            border-radius: 24px; cursor: pointer;
+            border-radius: 20px; cursor: pointer;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            gap: 6px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5),
-                inset 0 -4px 10px rgba(0,0,0,0.2),
-                inset 0 4px 10px rgba(255,255,255,0.4);
-            position: relative; overflow: hidden;
+            gap: 4px; transition: all 0.25s;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.3);
         }
         .game-btn:hover {
-            transform: translateY(-6px) scale(1.08);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.8),
-                inset 0 -4px 10px rgba(0,0,0,0.3),
-                inset 0 4px 10px rgba(255,255,255,0.6);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.7);
             border-color: #fff;
         }
         .game-btn:active { transform: translateY(-2px) scale(0.98); }
-        .game-btn .emoji { font-size: 42px; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3)); z-index: 1; }
+        .game-btn .emoji { font-size: 34px; }
         .game-btn .name {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 16px; letter-spacing: 1.5px;
+            font-size: 14px; letter-spacing: 1px;
             text-align: center; line-height: 1;
-            z-index: 1; text-shadow: 0 2px 4px rgba(255,255,255,0.5);
         }
         .extra-menu {
             display: grid; grid-template-columns: 1fr 1fr;
-            gap: 8px; padding: 12px 18px 0;
-            margin-bottom: 6px; position: relative; z-index: 1;
+            gap: 6px; padding: 8px 16px 0;
+            margin-bottom: 4px; position: relative; z-index: 1;
         }
         .extra-btn {
             background: linear-gradient(145deg, rgba(255, 215, 0, 0.15), rgba(139, 0, 0, 0.3));
             color: #ffd700;
             border: 2px solid rgba(255, 215, 0, 0.6);
-            border-radius: 14px; padding: 10px 12px;
+            border-radius: 14px; padding: 7px 10px;
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 14px; letter-spacing: 1px;
+            font-size: 12px; letter-spacing: 1px;
             cursor: pointer; transition: all 0.25s;
             display: flex; align-items: center;
             justify-content: space-between; gap: 6px;
@@ -198,30 +177,24 @@
             background: linear-gradient(145deg, rgba(255, 215, 0, 0.3), rgba(139, 0, 0, 0.5));
             border-color: #ffd700;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
         }
-        .extra-btn:active { transform: translateY(0); }
-        .extra-btn .extra-icon { font-size: 20px; }
-        .extra-btn .extra-label { flex: 1; text-align: left; font-size: 13px; }
-        .extra-btn .extra-value { font-size: 13px; font-family: 'Orbitron', sans-serif; color: #ffd700; font-weight: bold; }
+        .extra-btn .extra-icon { font-size: 18px; }
+        .extra-btn .extra-label { flex: 1; text-align: left; font-size: 12px; }
+        .extra-btn .extra-value { font-size: 12px; font-family: 'Orbitron', sans-serif; color: #ffd700; font-weight: bold; }
         .extra-btn .extra-badge {
             position: absolute; top: -6px; right: -6px;
             background: #ff1744; color: white;
-            width: 20px; height: 20px; border-radius: 50%;
+            width: 18px; height: 18px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: bold;
-            box-shadow: 0 0 10px rgba(255, 23, 68, 0.8);
+            font-size: 11px; font-weight: bold;
             animation: badgePulse 1.5s ease-in-out infinite;
         }
-        @keyframes badgePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
+        @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
         .extra-btn .extra-badge.hidden { display: none; }
         .bottom-tagline { text-align: center; padding: 10px 0 4px; flex-shrink: 0; position: relative; z-index: 1; }
         .bottom-tagline .main-text {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 22px; color: #ffd700; letter-spacing: 3px;
+            font-size: 18px; color: #ffd700; letter-spacing: 3px;
             text-shadow: 0 0 15px #ffd700, 0 0 30px #ff8c00;
             animation: taglinePulse 2s ease-in-out infinite;
         }
@@ -485,7 +458,6 @@
                 <div class="decor-star" style="bottom:18%;right:8%;animation-delay:1.5s;">🃏</div>
                 <div class="decor-star" style="top:50%;left:4%;animation-delay:2s;">🪙</div>
                 <div class="decor-star" style="top:65%;right:5%;animation-delay:0.7s;">🎡</div>
-                <div class="decor-star" style="top:35%;right:4%;animation-delay:1.2s;">⭐</div>
             </div>
             <div class="main-menu">
                 <button class="game-btn" data-game="roulette"><span class="emoji">🎡</span><span class="name">Рулетка</span></button>
@@ -636,12 +608,13 @@
                 <div class="result-text" id="fortuneResult">Крути колесо — испытай удачу!</div>
             </div>
             <div class="fortune-prizes">
+                <div class="fortune-prize">❌ Проигрыш</div>
                 <div class="fortune-prize">🍒 x2</div>
                 <div class="fortune-prize">🍋 x3</div>
                 <div class="fortune-prize">💎 x5</div>
+                <div class="fortune-prize">🎁 x7</div>
                 <div class="fortune-prize">👑 x10</div>
-                <div class="fortune-prize">🎁 БОНУС</div>
-                <div class="fortune-prize"><span class="p-mult">🏆 ДЖЕКПОТ</span></div>
+                <div class="fortune-prize" style="grid-column: span 2;"><span class="p-mult">🏆 ДЖЕКПОТ (x100)</span></div>
             </div>
             <div class="section-label" style="margin-top:10px;">Сумма ставки</div>
             <div class="amount-row">
@@ -702,7 +675,46 @@
     </div>
     <button class="sound-btn-bottom" id="soundBtn">🔇 Звук</button>
     <div class="cheat-notice" id="cheatNotice">🔑 +1 000 000!</div>
-    <script>
+        <script>
+        // ========== СИНХРОНИЗАЦИЯ С БОТОМ ==========
+        const TELEGRAM_USER_ID = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null;
+        const API_URL = 'https://casino-bot-1wdp.onrender.com';
+
+        async function syncBalanceFromBot() {
+            if (!TELEGRAM_USER_ID) {
+                console.log('Не в Telegram — localStorage');
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/balance/${TELEGRAM_USER_ID}`);
+                const data = await response.json();
+                wallet = data.balance;
+                localStorage.setItem('wc_wallet', wallet);
+                updateWalletUI();
+                console.log('✅ Баланс синхронизирован:', wallet);
+            } catch (e) {
+                console.log('❌ Ошибка синхронизации:', e);
+            }
+        }
+
+        async function updateBalanceOnBot(amount) {
+            if (!TELEGRAM_USER_ID) return;
+            try {
+                const response = await fetch(`${API_URL}/api/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: TELEGRAM_USER_ID, amount: amount })
+                });
+                const data = await response.json();
+                wallet = data.balance;
+                localStorage.setItem('wc_wallet', wallet);
+                updateWalletUI();
+            } catch (e) {
+                console.log('❌ Ошибка обновления:', e);
+            }
+        }
+
+        // ========== ДАННЫЕ ==========
         const RED_NUMBERS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
         const BLACK_NUMBERS = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
         const WHEEL_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
@@ -711,7 +723,7 @@
         const CARD_SUITS = ['♠', '♥', '♦', '♣'];
         const CARD_VALUES = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
 
-                const FORTUNE_PRIZES = [
+        const FORTUNE_PRIZES = [
             { label: '❌ ПРОИГРЫШ', mult: 0, color: '#2d2d44' },
             { label: '🍒 x2', mult: 2, color: '#e94560' },
             { label: '❌ ПРОИГРЫШ', mult: 0, color: '#2d2d44' },
@@ -726,7 +738,8 @@
             { label: '🏆 ДЖЕКПОТ', mult: 100, color: '#ffd700' }
         ];
 
-        let wallet = parseInt(localStorage.getItem('wc_wallet') || '10000');
+        // ========== ДАННЫЕ ИГРОКА ==========
+        let wallet = parseInt(localStorage.getItem('wc_wallet') || '1000');
         let rouletteHistory = JSON.parse(localStorage.getItem('wc_history') || '[]');
         let stats = JSON.parse(localStorage.getItem('wc_stats') || '{"totalBet":0,"totalWin":0,"gamesPlayed":0,"byGame":{"roulette":0,"blackjack":0,"slots":0,"coin":0,"fortune":0}}');
         let jackpot = parseInt(localStorage.getItem('wc_jackpot') || '10000');
@@ -741,7 +754,16 @@
         function saveFullHistory() { localStorage.setItem('wc_fullHistory', JSON.stringify(fullHistory)); }
         function saveTopRecords() { localStorage.setItem('wc_topRecords', JSON.stringify(topRecords)); }
 
-        function updateWalletUI() { document.getElementById('wallet').textContent = wallet.toLocaleString('ru-RU'); }
+        function updateWalletUI() {
+            const w = document.getElementById('wallet');
+            if (w) w.textContent = wallet.toLocaleString('ru-RU');
+            const wm = document.getElementById('walletMenu');
+            if (wm) wm.textContent = wallet.toLocaleString('ru-RU');
+            const ws = document.getElementById('walletShop');
+            if (ws) ws.textContent = wallet.toLocaleString('ru-RU');
+            const wu = document.getElementById('walletUpgrade');
+            if (wu) wu.textContent = wallet.toLocaleString('ru-RU');
+        }
 
         function addHistory(game, bet, win, detail) {
             fullHistory.unshift({ game, bet, win, detail: detail || '', time: Date.now() });
@@ -771,6 +793,7 @@
                 wallet += won;
                 jackpot = 10000;
                 saveWallet(); saveJackpot(); updateWalletUI(); updateJackpotUI();
+                updateBalanceOnBot(won);
                 soundJackpot();
                 alert(`💎 ДЖЕКПОТ! Ты выиграл ${won.toLocaleString('ru-RU')} монет!`);
                 return true;
@@ -824,6 +847,7 @@
             dailyData.lastClaim = new Date().toDateString();
             localStorage.setItem('wc_daily', JSON.stringify(dailyData));
             saveWallet(); updateWalletUI(); updateDailyUI();
+            updateBalanceOnBot(reward);
             soundWin();
             alert(`🎁 Ежедневный бонус: +${reward.toLocaleString('ru-RU')} монет!`);
         }
@@ -878,6 +902,7 @@
             }).join('');
         }
 
+        // ========== ЗВУКИ ==========
         let soundEnabled = localStorage.getItem('wc_sound') === 'on';
         let audioCtx = null;
         let musicInterval = null;
@@ -925,7 +950,6 @@
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(); osc.stop(audioCtx.currentTime + 0.25);
         }
-
         function startMusic(track) {
             currentMusic = track;
             stopMusic();
@@ -962,7 +986,8 @@
             soundClick();
             document.getElementById('splash').style.display = 'none';
             document.getElementById('gameWrap').style.display = 'flex';
-            updateWalletUI(); updateJackpotUI(); updateDailyUI();
+            syncBalanceFromBot();
+            updateJackpotUI(); updateDailyUI();
             startMusic('menu');
         });
 
@@ -997,7 +1022,7 @@
         document.querySelectorAll('.game-btn').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.game)));
         document.querySelectorAll('.extra-btn').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.extra)));
 
-        // 🔑 ЧИТ-КОД С АВТО-ПОВТОРОМ
+        // ========== ЧИТ-КОД ==========
         let cheatInterval = null;
         let cheatActive = false;
 
@@ -1006,23 +1031,21 @@
             cheatActive = true;
             wallet += 1000000;
             saveWallet(); updateWalletUI();
+            updateBalanceOnBot(1000000);
             soundCheat();
             const notice = document.getElementById('cheatNotice');
             notice.classList.add('show');
             setTimeout(() => notice.classList.remove('show'), 1000);
-            // Авто-повтор каждые 150 мс
             cheatInterval = setInterval(() => {
                 wallet += 100000;
                 saveWallet(); updateWalletUI();
                 playTone(1000 + Math.random() * 500, 0.03, 'square', 0.08, 0);
             }, 150);
         }
-
         function stopCheat() {
             cheatActive = false;
             if (cheatInterval) { clearInterval(cheatInterval); cheatInterval = null; }
         }
-
         document.addEventListener('mousedown', (e) => {
             if (e.ctrlKey && e.shiftKey && e.button === 0) {
                 e.preventDefault();
@@ -1051,9 +1074,8 @@
             const val = parseInt(input.value);
             return isNaN(val) || val <= 0 ? 0 : val;
         }
-    </script>
-    <script>
-        // РУЛЕТКА
+
+        // ========== РУЛЕТКА ==========
         const wheel = document.getElementById('wheel');
         const wCtx = wheel.getContext('2d');
         const CW = wheel.width, CH = wheel.height;
@@ -1121,6 +1143,7 @@
             if (!selectedBetType || betAmount <= 0 || betAmount > wallet) return;
             initAudio(); isSpinning = true; updateSpinButton();
             wallet -= betAmount; saveWallet(); updateWalletUI(); addToJackpot(betAmount);
+            updateBalanceOnBot(-betAmount);
             const resultIndex = Math.floor(Math.random() * SECTORS);
             const resultNum = WHEEL_ORDER[resultIndex];
             const baseAngle = -resultIndex * SECTOR_ANGLE - SECTOR_ANGLE / 2;
@@ -1158,6 +1181,7 @@
             const winAmount = win ? betAmount * multiplier : 0;
             if (win) {
                 wallet += winAmount; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
                 resultTextEl.textContent = `🎉 ВЫИГРЫШ! +${winAmount.toLocaleString('ru-RU')} (x${multiplier})`;
                 resultTextEl.className = 'result-text win'; soundWin();
             } else {
@@ -1183,7 +1207,7 @@
         }
         renderRouletteHistory();
 
-        // БЛЭКДЖЕК
+        // ========== БЛЭКДЖЕК ==========
         let bjDeck = [], bjPlayerCards = [], bjDealerCards = [];
         let bjGameActive = false, bjBetAmount = 0, bjDoubled = false;
 
@@ -1232,6 +1256,7 @@
             if (bet <= 0 || bet > wallet) return;
             initAudio(); bjBetAmount = bet; bjDoubled = false;
             wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+            updateBalanceOnBot(-bet);
             bjDeck = createDeck();
             bjPlayerCards = [bjDeck.pop(), bjDeck.pop()];
             bjDealerCards = [bjDeck.pop(), bjDeck.pop()];
@@ -1263,7 +1288,9 @@
         }
         function bjDouble() {
             if (!bjGameActive || wallet < bjBetAmount) return;
-            wallet -= bjBetAmount; saveWallet(); updateWalletUI(); bjDoubled = true;
+            wallet -= bjBetAmount; saveWallet(); updateWalletUI();
+            updateBalanceOnBot(-bjBetAmount);
+            bjDoubled = true;
             bjPlayerCards.push(bjDeck.pop()); soundCard(); renderBlackjack(true);
             if (handScore(bjPlayerCards) > 21) endBlackjack('bust'); else bjStand();
         }
@@ -1276,10 +1303,12 @@
             let winAmount = 0;
             if (result === 'win' || result === 'dealer_bust') {
                 winAmount = finalBet * 2; wallet += winAmount; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
                 resultEl.textContent = `🎉 ПОБЕДА! +${(winAmount - finalBet).toLocaleString('ru-RU')} (${p} vs ${d})`;
                 resultEl.className = 'result-text win'; soundWin();
             } else if (result === 'push') {
                 wallet += finalBet; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(finalBet);
                 resultEl.textContent = `🤝 Ничья! (${p})`; resultEl.className = 'result-text';
             } else {
                 resultEl.textContent = `😢 Проигрыш -${finalBet.toLocaleString('ru-RU')} (${p} vs ${d})`;
@@ -1293,7 +1322,7 @@
             document.getElementById('bjDoubleBtn').disabled = true;
         }
 
-        // СЛОТЫ
+        // ========== СЛОТЫ ==========
         let slotsSpinning = false;
         setupAmountInput('slotsBetAmount', 'slots-amount', () => {
             document.getElementById('slotsSpinBtn').disabled = slotsSpinning || getBetAmount('slotsBetAmount') <= 0 || getBetAmount('slotsBetAmount') > wallet;
@@ -1307,6 +1336,7 @@
             initAudio(); slotsSpinning = true;
             document.getElementById('slotsSpinBtn').disabled = true;
             wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+            updateBalanceOnBot(-bet);
             const result = [
                 SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)],
                 SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)],
@@ -1341,13 +1371,13 @@
                 resultEl.textContent = `😢 ${result.join(' ')} -${bet.toLocaleString('ru-RU')}`;
                 resultEl.className = 'result-text lose'; soundLose();
             }
-            if (winAmount > 0) { wallet += winAmount; saveWallet(); updateWalletUI(); }
+            if (winAmount > 0) { wallet += winAmount; saveWallet(); updateWalletUI(); updateBalanceOnBot(winAmount); }
             addHistory('slots', bet, winAmount, result.join(' '));
             tryJackpot(bet);
             document.getElementById('slotsSpinBtn').disabled = false;
         }
 
-        // ОРЁЛ / РЕШКА
+        // ========== ОРЁЛ / РЕШКА ==========
         let coinChoice = null, coinFlipping = false;
         document.querySelectorAll('[data-coin]').forEach(el => {
             el.addEventListener('click', () => {
@@ -1369,6 +1399,7 @@
             if (!coinChoice || bet <= 0 || bet > wallet) return;
             initAudio(); coinFlipping = true; updateCoinButton();
             wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+            updateBalanceOnBot(-bet);
             const result = Math.random() < 0.5 ? 'heads' : 'tails';
             const coin = document.getElementById('coin');
             const flips = 5 + Math.random() * 3;
@@ -1384,6 +1415,7 @@
             let winAmount = 0;
             if (win) {
                 winAmount = bet * 2; wallet += winAmount; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
                 resultEl.textContent = `🎉 ${resultName}! +${winAmount.toLocaleString('ru-RU')}`;
                 resultEl.className = 'result-text win'; soundWin();
             } else {
@@ -1401,7 +1433,7 @@
             coinFlipping = false; updateCoinButton();
         }
 
-        // КОЛЕСО ФОРТУНЫ
+        // ========== КОЛЕСО ФОРТУНЫ ==========
         const fortuneWheel = document.getElementById('fortuneWheel');
         const fCtx = fortuneWheel.getContext('2d');
         const FW = fortuneWheel.width, FH = fortuneWheel.height;
@@ -1424,14 +1456,13 @@
                 fCtx.beginPath(); fCtx.moveTo(FCX, FCY);
                 fCtx.arc(FCX, FCY, F_OUTER, startAngle, endAngle);
                 fCtx.closePath();
-                fCtx.fillStyle = prize.color;
-                fCtx.fill();
+                fCtx.fillStyle = prize.color; fCtx.fill();
                 fCtx.strokeStyle = '#ffd700'; fCtx.lineWidth = 3; fCtx.stroke();
                 const midAngle = startAngle + F_ANGLE / 2;
                 const tx = FCX + Math.cos(midAngle) * (F_OUTER - 60);
                 const ty = FCY + Math.sin(midAngle) * (F_OUTER - 60);
                 fCtx.save(); fCtx.translate(tx, ty); fCtx.rotate(midAngle + Math.PI / 2);
-                fCtx.fillStyle = '#fff'; fCtx.font = 'bold 22px sans-serif';
+                fCtx.fillStyle = '#fff'; fCtx.font = 'bold 20px sans-serif';
                 fCtx.textAlign = 'center'; fCtx.textBaseline = 'middle';
                 fCtx.fillText(prize.label, 0, 0);
                 fCtx.restore();
@@ -1455,11 +1486,12 @@
             const bet = free ? 0 : getBetAmount('fortuneBetAmount');
             if (!free && (bet <= 0 || bet > wallet)) return;
             if (free && dailyData.freeSpinUsed) { alert('Бесплатный спин уже использован сегодня!'); return; }
-
             initAudio(); fortuneSpinning = true;
             updateFortuneButton();
-            if (!free) { wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet); }
-
+            if (!free) {
+                wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+                updateBalanceOnBot(-bet);
+            }
             const resultIndex = Math.floor(Math.random() * F_SECTORS);
             const prize = FORTUNE_PRIZES[resultIndex];
             const baseAngle = -resultIndex * F_ANGLE - F_ANGLE / 2;
@@ -1468,7 +1500,6 @@
             while (targetAngle < fortuneRotation + Math.PI * 4) targetAngle += Math.PI * 2;
             const startRotation = fortuneRotation, startTime = Date.now(), duration = 5000;
             soundSpin();
-
             function animate() {
                 const elapsed = Date.now() - startTime;
                 const t = Math.min(elapsed / duration, 1);
@@ -1485,35 +1516,33 @@
             animate();
         }
 
-               function finishFortune(prize, bet, free) {
+        function finishFortune(prize, bet, free) {
             const resultEl = document.getElementById('fortuneResult');
             let winAmount = 0;
-
             if (prize.mult === 0) {
                 winAmount = 0;
                 resultEl.textContent = `😢 ${prize.label} -${(free ? 0 : bet).toLocaleString('ru-RU')} монет`;
                 resultEl.className = 'result-text lose';
                 soundLose();
-            }
-            else if (prize.label.includes('ДЖЕКПОТ')) {
+            } else if (prize.label.includes('ДЖЕКПОТ')) {
                 winAmount = jackpot;
                 jackpot = 10000;
                 saveJackpot(); updateJackpotUI();
                 wallet += winAmount;
                 saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
                 resultEl.textContent = `🏆 ДЖЕКПОТ! +${winAmount.toLocaleString('ru-RU')} монет!`;
                 resultEl.className = 'result-text win';
                 soundJackpot();
-            }
-            else {
+            } else {
                 winAmount = prize.mult * (free ? 1000 : bet);
                 wallet += winAmount;
                 saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
                 resultEl.textContent = `🎉 ${prize.label}! +${winAmount.toLocaleString('ru-RU')} монет!`;
                 resultEl.className = 'result-text win';
                 soundWin();
             }
-
             if (free) {
                 dailyData.freeSpinUsed = true;
                 dailyData.lastFreeSpin = new Date().toDateString();
@@ -1523,7 +1552,9 @@
             if (!free && winAmount > 0) tryJackpot(bet);
             fortuneSpinning = false;
             updateFortuneButton();
-        }        document.querySelectorAll('.filter-btn').forEach(btn => {
+        }
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active'); soundClick();
@@ -1541,6 +1572,7 @@
         updateJackpotUI();
         updateDailyUI();
         updateFortuneButton();
+        syncBalanceFromBot();
     </script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
