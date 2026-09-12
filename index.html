@@ -50,7 +50,11 @@
             text-shadow: 0 0 20px #ffd700, 0 0 40px #ff8c00, 0 4px 0 #8b0000, 0 8px 20px rgba(0,0,0,0.8);
             margin: 10px 0;
         }
-        .splash-line { width: 200px; height: 3px; background: linear-gradient(90deg, transparent, #ffd700, transparent); margin: 15px auto; box-shadow: 0 0 20px #ffd700; }
+        .splash-line {
+            width: 200px; height: 3px;
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            margin: 15px auto; box-shadow: 0 0 20px #ffd700;
+        }
         .splash-subtitle { color: #ffd700; font-size: 14px; opacity: 0.8; margin-bottom: 30px; letter-spacing: 2px; }
         .splash-btn {
             font-family: 'Orbitron', sans-serif;
@@ -432,9 +436,27 @@
         .fortune-prizes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
         .fortune-prize { background: rgba(0,0,0,0.4); border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 8px; padding: 6px 8px; color: white; font-size: 11px; text-align: center; }
         .fortune-prize .p-mult { color: #ffd700; font-family: 'Orbitron', sans-serif; font-weight: bold; }
+        .loading-screen {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #1a0000; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 2000;
+            color: #ffd700; font-family: 'Orbitron', sans-serif;
+        }
+        .loading-screen.hidden { display: none; }
+        .loading-spinner {
+            font-size: 50px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .loading-text { margin-top: 20px; font-size: 16px; }
     </style>
 </head>
 <body>
+    <!-- Загрузочный экран -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner">🎰</div>
+        <div class="loading-text">Загрузка казино...</div>
+    </div>
+
     <div class="splash" id="splash">
         <div class="splash-content">
             <div class="splash-crown">♛</div>
@@ -675,16 +697,17 @@
     </div>
     <button class="sound-btn-bottom" id="soundBtn">🔇 Звук</button>
     <div class="cheat-notice" id="cheatNotice">🔑 +1 000 000!</div>
-        <script>
+    <script>
         // ========== СИНХРОНИЗАЦИЯ С БОТОМ ==========
-        const TELEGRAM_USER_ID = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null;
+        let TELEGRAM_USER_ID = null;
         const API_URL = 'https://casino-bot-1wdp.onrender.com';
 
         async function syncBalanceFromBot() {
             if (!TELEGRAM_USER_ID) {
-                console.log('Не в Telegram — localStorage');
+                console.log('❌ Нет user_id — localStorage');
                 return;
             }
+            console.log('🔄 Синхронизация для user_id:', TELEGRAM_USER_ID);
             try {
                 const response = await fetch(`${API_URL}/api/balance/${TELEGRAM_USER_ID}`);
                 const data = await response.json();
@@ -757,12 +780,6 @@
         function updateWalletUI() {
             const w = document.getElementById('wallet');
             if (w) w.textContent = wallet.toLocaleString('ru-RU');
-            const wm = document.getElementById('walletMenu');
-            if (wm) wm.textContent = wallet.toLocaleString('ru-RU');
-            const ws = document.getElementById('walletShop');
-            if (ws) ws.textContent = wallet.toLocaleString('ru-RU');
-            const wu = document.getElementById('walletUpgrade');
-            if (wu) wu.textContent = wallet.toLocaleString('ru-RU');
         }
 
         function addHistory(game, bet, win, detail) {
@@ -1572,15 +1589,30 @@
         updateJackpotUI();
         updateDailyUI();
         updateFortuneButton();
-        syncBalanceFromBot();
     </script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        // ========== ИНИЦИАЛИЗАЦИЯ TELEGRAM (в самом конце!) ==========
         if (window.Telegram && window.Telegram.WebApp) {
             document.body.classList.add('tg-mode');
             window.Telegram.WebApp.expand();
             window.Telegram.WebApp.ready();
+            
+            // Получаем user_id ПОСЛЕ загрузки Telegram SDK
+            if (window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
+                TELEGRAM_USER_ID = window.Telegram.WebApp.initDataUnsafe.user.id;
+                console.log('✅ User ID получен:', TELEGRAM_USER_ID);
+                // Запускаем синхронизацию
+                syncBalanceFromBot();
+            } else {
+                console.log('❌ User ID не получен — localStorage');
+            }
+        } else {
+            console.log('❌ Telegram SDK не загружен');
         }
+        
+        // Скрываем загрузочный экран
+        document.getElementById('loadingScreen').classList.add('hidden');
     </script>
 </body>
 </html>
