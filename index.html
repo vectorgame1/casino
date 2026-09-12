@@ -10,6 +10,7 @@
             margin: 0; padding: 0; box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
         body {
             background-color: #0a0a0c;
@@ -38,6 +39,11 @@
             padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 8px;
             font-weight: 700; font-size: 16px; color: #f5c542;
             box-shadow: 0 0 15px rgba(245, 197, 66, 0.1);
+            max-width: 55vw; overflow: hidden;
+        }
+        #balance-display {
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-variant-numeric: tabular-nums;
         }
 
         /* ================= МЕНЮ ================= */
@@ -158,6 +164,8 @@
             border-radius: 12px; color: #fff; padding: 12px; font-size: 14px;
             width: 100%; outline: none;
         }
+        .amount-input::-webkit-outer-spin-button,
+        .amount-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .chip-btn {
             background: rgba(245, 197, 66, 0.1); border: 1px solid rgba(245, 197, 66, 0.3);
             color: #f5c542; padding: 12px 14px; border-radius: 12px;
@@ -246,7 +254,6 @@
             100% { transform: rotate(360deg) scale(1); }
         }
 
-        /* Общие */
         .msg { text-align: center; font-size: 13px; color: #888; margin-top: 10px; }
     </style>
 </head>
@@ -259,7 +266,7 @@
             <div class="username">Игрок_777</div>
         </div>
         <div class="balance-pill">
-            <span>💰</span> <span id="balance-display">10 000</span>
+            <span>💰</span> <span id="balance-display">...</span>
         </div>
     </header>
 
@@ -434,16 +441,25 @@
     </nav>
 
 <script>
-/* ================= БАЛАНС ================= */
-let balance = 10000;
+/* ================= БАЛАНС (С СОХРАНЕНИЕМ) ================= */
+const START_BALANCE = 1000000000000000; // Твой стартовый баланс (1 квадриллион)
+let balance = parseInt(localStorage.getItem('casino_balance'));
+
+if (isNaN(balance) || balance === null) {
+    balance = START_BALANCE;
+    localStorage.setItem('casino_balance', balance);
+}
+
 function updateBalance(amount) {
     balance += amount;
-    document.getElementById('balance-display').textContent = balance.toLocaleString('ru-RU');
+    if (balance < 0) balance = 0;
+    localStorage.setItem('casino_balance', balance);
+    formatBalance();
 }
+
 function formatBalance() {
     document.getElementById('balance-display').textContent = balance.toLocaleString('ru-RU');
 }
-formatBalance();
 
 function claimBonus() {
     if (localStorage.getItem('bonusClaimed')) {
@@ -454,6 +470,8 @@ function claimBonus() {
     localStorage.setItem('bonusClaimed', 'true');
     alert('🎁 Бонус 10 000 фишек зачислен!');
 }
+
+formatBalance();
 
 /* ================= УПРАВЛЕНИЕ ЭКРАНАМИ ================= */
 function openGame(game) {
@@ -468,7 +486,7 @@ function closeGame() {
 }
 function showTab(tab) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+    if (event && event.currentTarget) event.currentTarget.classList.add('active');
     if (tab === 'home') closeGame();
 }
 
@@ -483,7 +501,6 @@ const ROULETTE_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24
 let selectedBet = null;
 let rouletteHistory = [];
 
-// Отрисовка колеса
 function drawWheel() {
     const spinner = document.getElementById('wheel-spinner');
     spinner.innerHTML = '';
@@ -515,9 +532,6 @@ function drawWheel() {
         label.style.color = '#fff';
         label.style.fontSize = '11px';
         label.style.fontWeight = 'bold';
-        label.style.transform = `rotate(${angleStep/2}deg)`;
-        label.style.transformOrigin = 'center';
-        
         slice.appendChild(label);
         spinner.appendChild(slice);
     });
@@ -544,7 +558,6 @@ function spinRoulette() {
     const winningIndex = Math.floor(Math.random() * ROULETTE_ORDER.length);
     const winningNum = ROULETTE_ORDER[winningIndex];
     
-    // Анимация: 5 оборотов + доворот до нужного сектора
     const angleStep = 360 / ROULETTE_ORDER.length;
     const targetAngle = 360 * 5 + (360 - winningIndex * angleStep);
     
@@ -560,10 +573,8 @@ function spinRoulette() {
         if (selectedBet === 'red' && color === 'red') win = true;
         if (selectedBet === 'black' && color === 'black') win = true;
         if (selectedBet === 'green' && color === 'green') win = true;
-        if (selectedBet === 'number' && parseInt(document.getElementById('roulette-amount').dataset.number) === winningNum) win = true;
-
-        // Упрощенная логика для "числа" — если выбран "number", считаем что угадал число 7 (для примера)
-        // В реальности нужно поле ввода числа. Пока так.
+        // Ставка на число: угадываем 7 (можно потом добавить поле ввода)
+        if (selectedBet === 'number' && winningNum === 7) win = true;
 
         const resultEl = document.getElementById('roulette-result');
         if (win) {
@@ -582,9 +593,13 @@ function spinRoulette() {
         renderHistory();
 
         document.getElementById('roulette-spin').disabled = false;
-        wheel.style.transition = 'none';
-        wheel.style.transform = `rotate(0deg)`;
-        setTimeout(() => wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)', 50);
+        setTimeout(() => {
+            wheel.style.transition = 'none';
+            wheel.style.transform = `rotate(0deg)`;
+            setTimeout(() => {
+                wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+            }, 50);
+        }, 100);
     }, 4100);
 }
 
@@ -616,7 +631,6 @@ function spinSlots() {
     const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
     reels.forEach(r => r.classList.add('spinning'));
 
-    // Быстрая смена символов
     const spinInterval = setInterval(() => {
         reels.forEach(r => r.textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)]);
     }, 80);
