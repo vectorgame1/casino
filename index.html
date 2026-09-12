@@ -39,7 +39,7 @@
             padding: 8px 16px; border-radius: 20px; display: flex; align-items: center; gap: 8px;
             font-weight: 700; font-size: 16px; color: #f5c542;
             box-shadow: 0 0 15px rgba(245, 197, 66, 0.1);
-            max-width: 55vw; overflow: hidden;
+            max-width: 60vw; overflow: hidden;
         }
         #balance-display {
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -193,32 +193,30 @@
         .dot-black { background: #1d1d1d; border: 1px solid #333; }
         .dot-green { background: #2a9d8f; }
 
-        /* ================= РУЛЕТКА ================= */
-        .wheel-container {
-            position: relative; width: 280px; height: 280px;
-            margin: 10px auto 20px; display: flex; justify-content: center; align-items: center;
+        /* ================= РУЛЕТКА (CANVAS) ================= */
+        .wheel-wrapper {
+            position: relative; width: 300px; height: 300px;
+            margin: 10px auto 20px;
+            display: flex; justify-content: center; align-items: center;
         }
-        .wheel {
-            width: 100%; height: 100%; border-radius: 50%;
-            border: 8px solid #f5c542; position: relative;
-            box-shadow: 0 0 30px rgba(245,197,66,0.3), inset 0 0 20px rgba(0,0,0,0.8);
+        #wheel-canvas {
+            width: 300px; height: 300px; border-radius: 50%;
+            box-shadow: 0 0 40px rgba(245,197,66,0.3);
             transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-            overflow: hidden;
-        }
-        .wheel-spinner {
-            width: 100%; height: 100%; border-radius: 50%; position: relative;
         }
         .wheel-pointer {
-            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-            font-size: 28px; color: #f5c542; z-index: 5;
-            filter: drop-shadow(0 0 5px rgba(0,0,0,0.8));
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            font-size: 32px; color: #f5c542; z-index: 5;
+            filter: drop-shadow(0 0 8px rgba(0,0,0,0.9));
+            line-height: 1;
         }
-        .wheel-center {
+        .wheel-center-btn {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 50px; height: 50px; border-radius: 50%;
+            width: 60px; height: 60px; border-radius: 50%;
             background: radial-gradient(circle, #f5c542, #d4a017);
             display: flex; justify-content: center; align-items: center;
-            font-size: 24px; z-index: 3; border: 3px solid #0a0a0c;
+            font-size: 28px; z-index: 3; border: 4px solid #0a0a0c;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
         /* Слоты */
@@ -315,12 +313,10 @@
             <div class="game-title">🎡 Рулетка</div>
         </div>
 
-        <div class="wheel-container">
+        <div class="wheel-wrapper">
             <div class="wheel-pointer">▼</div>
-            <div class="wheel" id="wheel">
-                <div class="wheel-spinner" id="wheel-spinner"></div>
-                <div class="wheel-center">🎰</div>
-            </div>
+            <canvas id="wheel-canvas" width="300" height="300"></canvas>
+            <div class="wheel-center-btn">🎰</div>
         </div>
 
         <div class="result-box">
@@ -426,10 +422,10 @@
 
     <!-- ================= НИЖНЯЯ НАВИГАЦИЯ ================= -->
     <nav class="bottom-nav" id="bottom-nav">
-        <div class="nav-item active" onclick="showTab('home')">
+        <div class="nav-item active" onclick="showTab('home', event)">
             <span class="nav-icon">🏠</span><span>Главная</span>
         </div>
-        <div class="nav-item" onclick="showTab('games')">
+        <div class="nav-item" onclick="showTab('games', event)">
             <span class="nav-icon">🎮</span><span>Игры</span>
         </div>
         <div class="nav-item" onclick="alert('Турниры скоро!')">
@@ -441,19 +437,42 @@
     </nav>
 
 <script>
-/* ================= БАЛАНС (С СОХРАНЕНИЕМ) ================= */
-const START_BALANCE = 100000; // Твой стартовый баланс (10000 тысяч )
-let balance = parseInt(localStorage.getItem('casino_balance'));
+/* ================= БАЛАНС (ДВОЙНОЕ СОХРАНЕНИЕ) ================= */
+const START_BALANCE = 10000; // Твой баланс
+let balance = null;
 
-if (isNaN(balance) || balance === null) {
-    balance = START_BALANCE;
-    localStorage.setItem('casino_balance', balance);
+// Пробуем localStorage, если не работает — sessionStorage
+function loadBalance() {
+    let saved = localStorage.getItem('casino_balance');
+    if (saved === null) {
+        saved = sessionStorage.getItem('casino_balance');
+    }
+    if (saved === null || isNaN(parseInt(saved))) {
+        balance = START_BALANCE;
+        saveBalance();
+    } else {
+        balance = parseInt(saved);
+    }
+    console.log('💰 Баланс загружен:', balance);
+}
+
+function saveBalance() {
+    try {
+        localStorage.setItem('casino_balance', balance);
+    } catch(e) {
+        console.warn('localStorage недоступен, использую sessionStorage');
+    }
+    try {
+        sessionStorage.setItem('casino_balance', balance);
+    } catch(e) {
+        console.warn('sessionStorage тоже недоступен');
+    }
 }
 
 function updateBalance(amount) {
     balance += amount;
     if (balance < 0) balance = 0;
-    localStorage.setItem('casino_balance', balance);
+    saveBalance();
     formatBalance();
 }
 
@@ -462,15 +481,21 @@ function formatBalance() {
 }
 
 function claimBonus() {
-    if (localStorage.getItem('bonusClaimed')) {
+    if (localStorage.getItem('bonusClaimed') || sessionStorage.getItem('bonusClaimed')) {
         alert('Бонус уже получен!');
         return;
     }
     updateBalance(10000);
-    localStorage.setItem('bonusClaimed', 'true');
+    try {
+        localStorage.setItem('bonusClaimed', 'true');
+    } catch(e) {}
+    try {
+        sessionStorage.setItem('bonusClaimed', 'true');
+    } catch(e) {}
     alert('🎁 Бонус 10 000 фишек зачислен!');
 }
 
+loadBalance();
 formatBalance();
 
 /* ================= УПРАВЛЕНИЕ ЭКРАНАМИ ================= */
@@ -484,57 +509,82 @@ function closeGame() {
     document.getElementById('menu-screen').classList.remove('hidden');
     document.getElementById('bottom-nav').classList.remove('hidden');
 }
-function showTab(tab) {
+function showTab(tab, e) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    if (event && event.currentTarget) event.currentTarget.classList.add('active');
+    if (e && e.currentTarget) e.currentTarget.classList.add('active');
     if (tab === 'home') closeGame();
 }
 
-/* ================= УТИЛИТЫ ================= */
 function setAmount(game, value) {
     document.getElementById(game + '-amount').value = value;
 }
 
-/* ================= РУЛЕТКА ================= */
+/* ================= РУЛЕТКА (CANVAS) ================= */
 const RED_NUMBERS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
 const ROULETTE_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 let selectedBet = null;
 let rouletteHistory = [];
+let wheelRotation = 0;
 
 function drawWheel() {
-    const spinner = document.getElementById('wheel-spinner');
-    spinner.innerHTML = '';
+    const canvas = document.getElementById('wheel-canvas');
+    const ctx = canvas.getContext('2d');
+    const size = 300;
+    const center = size / 2;
+    const radius = center - 10;
     const total = ROULETTE_ORDER.length;
-    const angleStep = 360 / total;
+    const angleStep = (Math.PI * 2) / total;
 
+    ctx.clearRect(0, 0, size, size);
+
+    // Внешний обод
+    ctx.beginPath();
+    ctx.arc(center, center, radius + 8, 0, Math.PI * 2);
+    ctx.fillStyle = '#f5c542';
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(center, center, radius + 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#0a0a0c';
+    ctx.fill();
+
+    // Сектора
     ROULETTE_ORDER.forEach((num, i) => {
-        const angle = i * angleStep;
+        const startAngle = i * angleStep - Math.PI / 2;
+        const endAngle = startAngle + angleStep;
         const isRed = RED_NUMBERS.includes(num);
-        const color = num === 0 ? '#2a9d8f' : (isRed ? '#e63946' : '#1d1d1d');
-        
-        const slice = document.createElement('div');
-        slice.style.position = 'absolute';
-        slice.style.width = '50%';
-        slice.style.height = '50%';
-        slice.style.left = '50%';
-        slice.style.top = '0';
-        slice.style.transformOrigin = '0% 100%';
-        slice.style.transform = `rotate(${angle}deg)`;
-        slice.style.background = color;
-        slice.style.clipPath = 'polygon(0 0, 100% 0, 0 100%)';
-        slice.style.borderLeft = '1px solid rgba(0,0,0,0.3)';
-        
-        const label = document.createElement('span');
-        label.textContent = num;
-        label.style.position = 'absolute';
-        label.style.left = '10px';
-        label.style.top = '10px';
-        label.style.color = '#fff';
-        label.style.fontSize = '11px';
-        label.style.fontWeight = 'bold';
-        slice.appendChild(label);
-        spinner.appendChild(slice);
+        const color = num === 0 ? '#2a9d8f' : (isRed ? '#e63946' : '#1a1a1a');
+
+        ctx.beginPath();
+        ctx.moveTo(center, center);
+        ctx.arc(center, center, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Цифры
+        ctx.save();
+        ctx.translate(center, center);
+        ctx.rotate(startAngle + angleStep / 2);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 13px Arial';
+        ctx.fillText(num, radius - 22, 0);
+        ctx.restore();
     });
+
+    // Внутренний круг
+    ctx.beginPath();
+    ctx.arc(center, center, 50, 0, Math.PI * 2);
+    ctx.fillStyle = '#0a0a0c';
+    ctx.fill();
+    ctx.strokeStyle = '#f5c542';
+    ctx.lineWidth = 3;
+    ctx.stroke();
 }
 drawWheel();
 
@@ -558,12 +608,15 @@ function spinRoulette() {
     const winningIndex = Math.floor(Math.random() * ROULETTE_ORDER.length);
     const winningNum = ROULETTE_ORDER[winningIndex];
     
-    const angleStep = 360 / ROULETTE_ORDER.length;
-    const targetAngle = 360 * 5 + (360 - winningIndex * angleStep);
+    const angleStepDeg = 360 / ROULETTE_ORDER.length;
+    // Крутим 5 полных оборотов + доворачиваем так, чтобы выигрышный сектор оказался под указателем
+    const targetRotation = wheelRotation + (360 * 5) + (360 - (winningIndex * angleStepDeg)) - (wheelRotation % 360);
     
-    const wheel = document.getElementById('wheel');
-    wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
-    wheel.style.transform = `rotate(${targetAngle}deg)`;
+    const canvas = document.getElementById('wheel-canvas');
+    canvas.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
+    canvas.style.transform = `rotate(${targetRotation}deg)`;
+    
+    wheelRotation = targetRotation;
 
     setTimeout(() => {
         const isRed = RED_NUMBERS.includes(winningNum);
@@ -573,7 +626,6 @@ function spinRoulette() {
         if (selectedBet === 'red' && color === 'red') win = true;
         if (selectedBet === 'black' && color === 'black') win = true;
         if (selectedBet === 'green' && color === 'green') win = true;
-        // Ставка на число: угадываем 7 (можно потом добавить поле ввода)
         if (selectedBet === 'number' && winningNum === 7) win = true;
 
         const resultEl = document.getElementById('roulette-result');
@@ -593,13 +645,6 @@ function spinRoulette() {
         renderHistory();
 
         document.getElementById('roulette-spin').disabled = false;
-        setTimeout(() => {
-            wheel.style.transition = 'none';
-            wheel.style.transform = `rotate(0deg)`;
-            setTimeout(() => {
-                wheel.style.transition = 'transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99)';
-            }, 50);
-        }, 100);
     }, 4100);
 }
 
