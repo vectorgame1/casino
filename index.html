@@ -8,7 +8,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
-            background: #0a0a0a;
+            background: #000;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; height: 100%; width: 100%;
             font-family: 'Segoe UI', sans-serif;
@@ -16,24 +16,44 @@
             position: fixed; top: 0; left: 0;
             touch-action: none; user-select: none;
         }
+        /* ===== КРАСИВЫЙ ФОН ===== */
         .bg-pattern {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background:
-                radial-gradient(circle at 20% 20%, rgba(255, 215, 0, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(255, 140, 0, 0.05) 0%, transparent 60%),
-                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-            z-index: -1;
+                radial-gradient(ellipse at 20% 10%, rgba(255, 215, 0, 0.18) 0%, transparent 45%),
+                radial-gradient(ellipse at 80% 90%, rgba(255, 140, 0, 0.15) 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 215, 0, 0.06) 0%, transparent 60%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1208 50%, #0a0a0a 100%);
+            z-index: -2;
         }
         .bg-pattern::before {
             content: ''; position: absolute; inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffd700' stroke-width='0.5' stroke-opacity='0.15'%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z'/%3E%3Ccircle cx='30' cy='30' r='8'/%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.6;
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffd700' stroke-width='0.6' stroke-opacity='0.22'%3E%3Cpath d='M40 0 L80 40 L40 80 L0 40 Z'/%3E%3Ccircle cx='40' cy='40' r='12'/%3E%3Ccircle cx='40' cy='40' r='4' fill='%23ffd700' fill-opacity='0.15'/%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.7;
+            animation: bgShift 30s linear infinite;
+        }
+        @keyframes bgShift {
+            0% { background-position: 0 0; }
+            100% { background-position: 80px 80px; }
         }
         .bg-pattern::after {
             content: ''; position: absolute; inset: 0;
-            background: radial-gradient(ellipse at center, transparent 30%, #000 100%);
+            background: radial-gradient(ellipse at center, transparent 25%, #000 110%);
         }
+        /* ===== ЗВЁЗДЫ НА ФОНЕ ===== */
+        .stars {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            overflow: hidden;
+        }
+        .star {
+            position: absolute; font-size: 20px; opacity: 0.25;
+            animation: starFloat 8s ease-in-out infinite;
+        }
+        @keyframes starFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+            50% { transform: translateY(-25px) rotate(180deg); opacity: 0.5; }
+        }
+        /* ===== ЗАСТАВКА ===== */
         .splash {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 60%, #000 100%);
@@ -43,7 +63,7 @@
         .splash::before {
             content: ''; position: absolute; top: -50%; left: -50%;
             width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.12) 0%, transparent 50%);
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, transparent 50%);
             animation: splashGlow 4s ease-in-out infinite;
         }
         @keyframes splashGlow {
@@ -53,7 +73,7 @@
         .splash-content { text-align: center; z-index: 2; padding: 20px; animation: splashFadeIn 1s ease-out; }
         @keyframes splashFadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
         .splash-coin {
-            width: 160px; height: 160px; margin: 0 auto 20px;
+            width: 180px; height: 180px; margin: 0 auto 20px;
             position: relative; perspective: 1000px;
             animation: coinSpin 3s ease-in-out infinite;
         }
@@ -68,7 +88,7 @@
         }
         @keyframes coinSpin {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+            50% { transform: translateY(-18px); }
         }
         .coin-face {
             position: absolute; width: 100%; height: 100%;
@@ -78,59 +98,65 @@
             background: radial-gradient(circle at 30% 30%, #fff59d, #ffd700 40%, #b8860b 90%);
             border: 6px solid #8a6d00;
             box-shadow:
-                inset 0 0 30px rgba(255, 255, 255, 0.5),
-                inset 0 -20px 30px rgba(0, 0, 0, 0.3),
-                0 0 40px rgba(255, 215, 0, 0.7),
-                0 0 80px rgba(255, 140, 0, 0.4);
+                inset 0 0 40px rgba(255, 255, 255, 0.5),
+                inset 0 -25px 40px rgba(0, 0, 0, 0.35),
+                0 0 50px rgba(255, 215, 0, 0.8),
+                0 0 100px rgba(255, 140, 0, 0.5);
         }
         .coin-face.back { transform: rotateY(180deg); }
         .coin-face .coin-letter {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 90px; color: #8a6d00;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 3px 0 #b8860b;
+            font-size: 100px; color: #8a6d00;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 4px 0 #b8860b;
             font-weight: 900;
         }
         .splash-title {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 78px; color: #ffd700;
-            line-height: 0.9; letter-spacing: 8px;
+            font-size: 84px; color: #ffd700;
+            line-height: 0.9; letter-spacing: 10px;
             text-shadow:
-                0 0 20px #ffd700, 0 0 40px #ff8c00,
-                0 4px 0 #8a6d00, 0 8px 20px rgba(0,0,0,0.8);
+                0 0 20px #ffd700, 0 0 50px #ff8c00,
+                0 5px 0 #8a6d00, 0 10px 25px rgba(0,0,0,0.9);
             margin: 10px 0;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
         }
         .splash-line {
-            width: 220px; height: 3px;
+            width: 250px; height: 3px;
             background: linear-gradient(90deg, transparent, #ffd700, transparent);
-            margin: 15px auto;
-            box-shadow: 0 0 20px #ffd700;
+            margin: 18px auto;
+            box-shadow: 0 0 25px #ffd700;
         }
         .splash-subtitle {
-            color: #ffd700; font-size: 14px; opacity: 0.85;
-            margin-bottom: 30px; letter-spacing: 3px;
+            color: #ffd700; font-size: 15px; opacity: 0.9;
+            margin-bottom: 32px; letter-spacing: 4px;
             font-family: 'Orbitron', sans-serif;
         }
         .splash-btn {
             font-family: 'Orbitron', sans-serif;
             background: linear-gradient(135deg, #ffd700, #ff8c00);
             color: #1a1a1a; border: 3px solid #ffd700;
-            border-radius: 12px; padding: 16px 50px;
-            font-size: 20px; font-weight: 900; letter-spacing: 3px;
+            border-radius: 14px; padding: 18px 55px;
+            font-size: 22px; font-weight: 900; letter-spacing: 4px;
             cursor: pointer; transition: all 0.3s;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.7), inset 0 0 25px rgba(255, 255, 255, 0.35);
             animation: btnPulse 1.5s ease-in-out infinite;
         }
         @keyframes btnPulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.3); }
-            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.5); }
+            0%, 100% { box-shadow: 0 0 35px rgba(255, 215, 0, 0.7), inset 0 0 25px rgba(255, 255, 255, 0.35); }
+            50% { box-shadow: 0 0 55px rgba(255, 215, 0, 0.95), inset 0 0 35px rgba(255, 255, 255, 0.55); }
         }
         .splash-btn:hover { transform: scale(1.05); background: linear-gradient(135deg, #fff59d, #ffd700); }
         .splash-btn:active { transform: scale(0.98); }
+        /* ===== ИГРОВОЕ ОКНО ===== */
         .game-wrap {
-            background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
-            padding: 10px; border-radius: 18px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 40px rgba(255, 215, 0, 0.08);
-            position: relative; width: 100%; max-width: 460px;
+            background: linear-gradient(135deg, #141414, #0a0a0a);
+            padding: 10px; border-radius: 20px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.95), inset 0 0 50px rgba(255, 215, 0, 0.1);
+            position: relative; width: 100%; max-width: 480px;
             min-height: 500px; max-height: 100vh;
             display: flex; flex-direction: column;
             overflow: hidden; border: 2px solid #ffd700;
@@ -138,91 +164,108 @@
         body.tg-mode .game-wrap { height: 100vh; max-height: 100vh; min-height: 0; }
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; flex-shrink: 0; gap: 6px;
-            position: relative; padding-right: 8px; min-height: 36px;
+            margin-bottom: 10px; flex-shrink: 0; gap: 6px;
+            position: relative; padding-right: 8px; min-height: 38px;
         }
         .title {
             font-family: 'Bebas Neue', sans-serif;
-            color: #ffd700; font-size: 18px; letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+            color: #ffd700; font-size: 19px; letter-spacing: 2px;
+            text-shadow: 0 0 18px rgba(255, 215, 0, 0.9);
             position: absolute; left: 50%; transform: translateX(-50%);
             white-space: nowrap;
-            background: rgba(0,0,0,0.5); padding: 4px 12px;
-            border-radius: 20px; border: 1px solid rgba(255, 215, 0, 0.4);
+            background: rgba(0,0,0,0.6); padding: 5px 14px;
+            border-radius: 22px; border: 1px solid rgba(255, 215, 0, 0.5);
         }
         .wallet-display {
             font-family: 'Orbitron', sans-serif;
             color: #ffd700; font-size: 13px; font-weight: bold;
-            background: rgba(0,0,0,0.7); padding: 6px 12px;
-            border-radius: 20px; border: 2px solid #ffd700;
-            box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+            background: rgba(0,0,0,0.75); padding: 7px 14px;
+            border-radius: 22px; border: 2px solid #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
             z-index: 2;
         }
         .back-btn {
-            background: rgba(0,0,0,0.7); color: #ffd700;
-            border: 2px solid #ffd700; border-radius: 8px;
-            padding: 6px 10px; font-size: 11px; font-weight: bold;
+            background: rgba(0,0,0,0.75); color: #ffd700;
+            border: 2px solid #ffd700; border-radius: 9px;
+            padding: 7px 11px; font-size: 11px; font-weight: bold;
             cursor: pointer; z-index: 3;
         }
         .sound-btn-bottom {
             position: absolute; bottom: 10px; right: 10px;
-            background: rgba(0,0,0,0.7); color: #ffd700;
-            border: 2px solid #ffd700; border-radius: 8px;
-            padding: 6px 10px; font-size: 11px; font-weight: bold;
+            background: rgba(0,0,0,0.75); color: #ffd700;
+            border: 2px solid #ffd700; border-radius: 9px;
+            padding: 7px 11px; font-size: 11px; font-weight: bold;
             cursor: pointer; z-index: 20;
         }
         .sound-btn-bottom.on { background: #ffd700; color: #1a1a1a; }
         .screen {
             display: none; flex-direction: column; flex: 1; min-height: 0;
             overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;
-            padding-bottom: 40px;
+            padding-bottom: 45px;
         }
         .screen::-webkit-scrollbar { display: none; }
         .screen.active { display: flex; }
         .screen-h2 {
             font-family: 'Bebas Neue', sans-serif;
-            color: #ffd700; font-size: 22px; text-align: center;
-            margin-bottom: 10px; letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+            color: #ffd700; font-size: 23px; text-align: center;
+            margin-bottom: 12px; letter-spacing: 2px;
+            text-shadow: 0 0 18px rgba(255, 215, 0, 0.7);
         }
+        /* ===== МЕНЮ 3x3 ===== */
         .main-menu {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 10px; padding: 8px 16px 0;
-            align-content: center; justify-items: center;
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 8px; padding: 6px 10px 0;
+            align-content: center;
             position: relative; z-index: 1;
         }
         .game-btn {
-            width: 100px; height: 100px;
+            aspect-ratio: 1;
             background: linear-gradient(145deg, #ffd700, #ff8c00, #b8860b);
-            color: #1a1a1a; border: 3px solid #fff59d;
-            border-radius: 20px; cursor: pointer;
+            color: #1a1a1a; border: 2.5px solid #fff59d;
+            border-radius: 16px; cursor: pointer;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            gap: 4px; transition: all 0.25s;
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.3);
+            gap: 2px; transition: all 0.25s;
+            box-shadow: 0 5px 18px rgba(255, 215, 0, 0.4), inset 0 0 18px rgba(255, 255, 255, 0.3);
+            padding: 4px;
         }
         .game-btn:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.7);
+            transform: translateY(-4px) scale(1.06);
+            box-shadow: 0 10px 28px rgba(255, 215, 0, 0.75);
             border-color: #fff;
         }
         .game-btn:active { transform: translateY(-2px) scale(0.98); }
-        .game-btn .emoji { font-size: 34px; }
+        .game-btn .emoji { font-size: 32px; line-height: 1; }
         .game-btn .name {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 14px; letter-spacing: 1px;
+            font-size: 12px; letter-spacing: 0.5px;
             text-align: center; line-height: 1;
+        }
+        .game-btn.new-game {
+            position: relative;
+            animation: newGameGlow 2s ease-in-out infinite;
+        }
+        @keyframes newGameGlow {
+            0%, 100% { box-shadow: 0 5px 18px rgba(255, 215, 0, 0.4), inset 0 0 18px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 5px 25px rgba(255, 80, 80, 0.8), inset 0 0 22px rgba(255, 255, 255, 0.4); }
+        }
+        .game-btn.new-game::after {
+            content: 'NEW'; position: absolute; top: -6px; right: -6px;
+            background: #ff3030; color: white; font-size: 8px;
+            padding: 2px 5px; border-radius: 6px; font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 0 8px rgba(255, 48, 48, 0.8);
         }
         .extra-menu {
             display: grid; grid-template-columns: 1fr 1fr;
-            gap: 6px; padding: 8px 16px 0;
+            gap: 6px; padding: 10px 16px 0;
             margin-bottom: 4px; position: relative; z-index: 1;
         }
         .extra-btn {
             background: linear-gradient(145deg, rgba(255, 215, 0, 0.15), rgba(0, 0, 0, 0.4));
             color: #ffd700;
             border: 2px solid rgba(255, 215, 0, 0.6);
-            border-radius: 14px; padding: 7px 10px;
+            border-radius: 14px; padding: 8px 10px;
             font-family: 'Bebas Neue', sans-serif;
             font-size: 12px; letter-spacing: 1px;
             cursor: pointer; transition: all 0.25s;
@@ -239,21 +282,21 @@
         .extra-btn .extra-icon { font-size: 18px; }
         .extra-btn .extra-label { flex: 1; text-align: left; font-size: 12px; }
         .extra-btn .extra-value { font-size: 12px; font-family: 'Orbitron', sans-serif; color: #ffd700; font-weight: bold; }
-        .bottom-tagline { text-align: center; padding: 10px 0 4px; flex-shrink: 0; position: relative; z-index: 1; }
+        .bottom-tagline { text-align: center; padding: 12px 0 4px; flex-shrink: 0; position: relative; z-index: 1; }
         .bottom-tagline .main-text {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 18px; color: #ffd700; letter-spacing: 3px;
-            text-shadow: 0 0 15px #ffd700, 0 0 30px #ff8c00;
+            text-shadow: 0 0 18px #ffd700, 0 0 35px #ff8c00;
             animation: taglinePulse 2s ease-in-out infinite;
         }
         @keyframes taglinePulse {
-            0%, 100% { text-shadow: 0 0 15px #ffd700, 0 0 30px #ff8c00; }
-            50% { text-shadow: 0 0 25px #ffd700, 0 0 50px #ff8c00, 0 0 70px #ff8c00; }
+            0%, 100% { text-shadow: 0 0 18px #ffd700, 0 0 35px #ff8c00; }
+            50% { text-shadow: 0 0 28px #ffd700, 0 0 55px #ff8c00, 0 0 80px #ff8c00; }
         }
         .bottom-tagline .sub-text { font-size: 10px; color: rgba(255, 215, 0, 0.5); letter-spacing: 3px; margin-top: 2px; }
         .menu-decor { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: hidden; z-index: 0; }
         .decor-star {
-            position: absolute; font-size: 28px; opacity: 0.15;
+            position: absolute; font-size: 26px; opacity: 0.15;
             animation: decorFloat 4s ease-in-out infinite;
             filter: blur(0.5px);
         }
@@ -261,6 +304,7 @@
             0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.15; }
             50% { transform: translateY(-15px) rotate(15deg); opacity: 0.35; }
         }
+                /* ===== РУЛЕТКА ===== */
         .wheel-container {
             position: relative; width: 100%; max-width: 240px;
             aspect-ratio: 1; margin: 6px auto; flex-shrink: 0;
@@ -346,6 +390,7 @@
         .history-item.red { background: #e94560; }
         .history-item.black { background: #2d2d44; border: 1px solid #666; }
         .history-item.green { background: #4ecca3; color: #1a1a2e; }
+        /* ===== БЛЭКДЖЕК ===== */
         .bj-table {
             background: linear-gradient(135deg, #0a4d2e, #0d6b3f);
             border: 2px solid #ffd700; border-radius: 14px;
@@ -379,6 +424,7 @@
         .bj-btn.hit { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
         .bj-btn.stand { background: linear-gradient(135deg, #e67e22, #d35400); color: white; }
         .bj-btn.double { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
+        /* ===== СЛОТЫ ===== */
         .slots-machine {
             background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
             border-radius: 16px; padding: 16px 12px;
@@ -405,6 +451,7 @@
         }
         .slots-payline { text-align: center; color: #ffd700; font-size: 16px; margin-top: 6px; letter-spacing: 3px; }
         .slots-info { color: #ffd700; font-size: 9px; text-align: center; margin-top: 6px; opacity: 0.7; flex-shrink: 0; }
+        /* ===== МОНЕТКА ===== */
         .coin-container { display: flex; justify-content: center; align-items: center; margin: 15px 0; perspective: 1000px; flex-shrink: 0; }
         .coin { width: 120px; height: 120px; position: relative; transform-style: preserve-3d; transition: transform 2s cubic-bezier(0.4, 0.0, 0.2, 1); }
         .coin-side {
@@ -417,6 +464,7 @@
             box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 0 30px rgba(255, 215, 0, 0.6);
         }
         .coin-side.tails { transform: rotateY(180deg); }
+        /* ===== СТАТИСТИКА / БОНУС / ДЖЕКПОТ / ИСТОРИЯ ===== */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .stat-card { background: rgba(0,0,0,0.6); border: 2px solid rgba(255, 215, 0, 0.4); border-radius: 12px; padding: 12px; text-align: center; }
         .stat-card .stat-label { color: #aaa; font-size: 10px; margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase; }
@@ -475,11 +523,13 @@
         .top-record-item .amount { font-family: 'Orbitron', sans-serif; color: #4ecca3; font-weight: bold; font-size: 14px; }
         .cheat-notice { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); background: linear-gradient(135deg, #ffd700, #ff8c00); color: #1a1a1a; padding: 20px 40px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 900; z-index: 100; pointer-events: none; opacity: 0; transition: all 0.3s; box-shadow: 0 0 50px rgba(255, 215, 0, 0.9); border: 3px solid #fff59d; }
         .cheat-notice.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        /* ===== КОЛЕСО ФОРТУНЫ ===== */
         .fortune-container { display: flex; justify-content: center; align-items: center; margin: 10px 0; flex-shrink: 0; }
         #fortuneWheel { max-width: 260px; width: 100%; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(255, 215, 0, 0.4); }
         .fortune-prizes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
         .fortune-prize { background: rgba(0,0,0,0.5); border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 8px; padding: 6px 8px; color: white; font-size: 11px; text-align: center; }
         .fortune-prize .p-mult { color: #ffd700; font-family: 'Orbitron', sans-serif; font-weight: bold; }
+        /* ===== МИНЫ ===== */
         .mines-info {
             display: flex; justify-content: space-around; align-items: center;
             background: rgba(0,0,0,0.6); border: 2px solid #ffd700;
@@ -489,9 +539,7 @@
         .mines-info-item { text-align: center; flex: 1; }
         .mines-info-label { color: #aaa; font-size: 9px; letter-spacing: 1px; }
         .mines-info-value { font-family: 'Orbitron', sans-serif; color: #ffd700; font-size: 14px; font-weight: 900; margin-top: 2px; }
-        .mines-level-selector {
-            display: flex; gap: 6px; margin-bottom: 10px; flex-shrink: 0;
-        }
+        .mines-level-selector { display: flex; gap: 6px; margin-bottom: 10px; flex-shrink: 0; }
         .mines-level-btn {
             flex: 1; padding: 10px 6px; border: 2px solid #333;
             border-radius: 10px; background: rgba(0,0,0,0.5);
@@ -572,10 +620,222 @@
             font-size: 16px; font-weight: 900; min-height: 24px;
             margin-bottom: 6px; flex-shrink: 0;
         }
+        /* ===== КРАШ ===== */
+        .crash-area {
+            position: relative; width: 100%; height: 220px;
+            background: linear-gradient(180deg, #0a0a0a 0%, #1a0f1f 50%, #0a0a0a 100%);
+            border: 2px solid #ffd700; border-radius: 14px;
+            overflow: hidden; margin-bottom: 8px; flex-shrink: 0;
+        }
+        .crash-area::before {
+            content: ''; position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 215, 0, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 215, 0, 0.08) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .crash-rocket {
+            position: absolute; font-size: 38px;
+            transition: left 0.08s linear, bottom 0.08s linear;
+            z-index: 3;
+            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.9));
+        }
+        .crash-rocket.flying { animation: rocketWobble 0.3s ease-in-out infinite; }
+        @keyframes rocketWobble {
+            0%, 100% { transform: rotate(-8deg) scale(1); }
+            50% { transform: rotate(-12deg) scale(1.08); }
+        }
+        .crash-rocket.explode { animation: rocketExplode 0.6s ease-out forwards; }
+        @keyframes rocketExplode {
+            0% { transform: scale(1) rotate(-10deg); opacity: 1; }
+            50% { transform: scale(2.5) rotate(0deg); opacity: 0.8; }
+            100% { transform: scale(3.5) rotate(0deg); opacity: 0; }
+        }
+        .crash-multiplier {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 56px; font-weight: 900;
+            color: #ffd700;
+            text-shadow: 0 0 25px #ffd700, 0 0 50px #ff8c00;
+            z-index: 4; pointer-events: none;
+            transition: color 0.3s;
+        }
+        .crash-multiplier.high { color: #4ecca3; text-shadow: 0 0 25px #4ecca3, 0 0 50px #16a085; }
+        .crash-multiplier.mega { color: #ff3030; text-shadow: 0 0 25px #ff3030, 0 0 50px #8b0000; animation: megaPulse 0.4s ease-in-out infinite; }
+        @keyframes megaPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.08); }
+        }
+        .crash-status {
+            text-align: center; font-family: 'Orbitron', sans-serif;
+            font-size: 14px; font-weight: 900;
+            margin-bottom: 6px; min-height: 22px;
+            flex-shrink: 0;
+        }
+        .crash-history {
+            display: flex; gap: 4px; margin-bottom: 8px;
+            flex-wrap: wrap; justify-content: center;
+            min-height: 22px; flex-shrink: 0;
+        }
+        .crash-history-item {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px; font-weight: bold;
+            padding: 3px 7px; border-radius: 6px;
+            background: rgba(0,0,0,0.6);
+        }
+        .crash-history-item.low { color: #ff5252; border: 1px solid #ff5252; }
+        .crash-history-item.mid { color: #ffd700; border: 1px solid #ffd700; }
+        .crash-history-item.high { color: #4ecca3; border: 1px solid #4ecca3; }
+        .crash-cashout-btn {
+            font-family: 'Orbitron', sans-serif;
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, #ff3030, #8b0000);
+            color: white; border: 2px solid #ff8080;
+            border-radius: 12px; font-size: 18px; font-weight: 900;
+            letter-spacing: 2px; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 48, 48, 0.6);
+            transition: all 0.2s; flex-shrink: 0;
+        }
+        .crash-cashout-btn:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 30px rgba(255, 48, 48, 0.9); }
+        .crash-cashout-btn:disabled { background: #333; color: #666; border-color: #444; cursor: not-allowed; box-shadow: none; }
+        /* ===== КУРИЦА ===== */
+        .chicken-area {
+            position: relative;
+            background: linear-gradient(180deg, #1a3a1a 0%, #2d5a2d 100%);
+            border: 2px solid #ffd700; border-radius: 14px;
+            padding: 12px; margin-bottom: 8px;
+            flex-shrink: 0; overflow: hidden;
+            min-height: 280px;
+        }
+        .chicken-row {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 0;
+            position: relative;
+            min-height: 32px;
+        }
+        .chicken-lane {
+            flex: 1; height: 4px; border-radius: 2px;
+            background: linear-gradient(90deg, #333 50%, #444 50%);
+            background-size: 20px 4px;
+            opacity: 0.5;
+        }
+        .chicken-lane.active-lane {
+            background: linear-gradient(90deg, #4ecca3 50%, #16a085 50%);
+            background-size: 20px 4px;
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(78, 204, 163, 0.6);
+        }
+        .chicken-lane.boom-lane {
+            background: linear-gradient(90deg, #ff3030 50%, #8b0000 50%);
+            background-size: 20px 4px;
+            opacity: 1;
+            box-shadow: 0 0 15px rgba(255, 48, 48, 0.8);
+        }
+        .chicken-step {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px; font-weight: bold;
+            color: rgba(255, 215, 0, 0.5);
+            min-width: 24px; text-align: center;
+        }
+        .chicken-step.passed { color: #4ecca3; }
+        .chicken-step.current { color: #ffd700; text-shadow: 0 0 10px #ffd700; }
+        .chicken-icon {
+            font-size: 28px; z-index: 2;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
+            transition: all 0.3s;
+        }
+        .chicken-icon.jumping { animation: chickenJump 0.4s ease-out; }
+        @keyframes chickenJump {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.2); }
+            100% { transform: translateY(0) scale(1); }
+        }
+        .chicken-icon.dead { animation: chickenDead 0.5s ease-out forwards; }
+        @keyframes chickenDead {
+            0% { transform: rotate(0deg); opacity: 1; }
+            100% { transform: rotate(90deg) scale(0.5); opacity: 0.3; }
+        }
+        .chicken-car {
+            position: absolute; right: -50px;
+            font-size: 26px; z-index: 1;
+            transition: right 1.5s linear;
+        }
+        .chicken-car.drive { right: 110%; }
+        .chicken-car.crash { animation: carCrash 0.4s ease-out forwards; }
+        @keyframes carCrash {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.5) rotate(180deg); }
+            100% { transform: scale(1.8) rotate(360deg); opacity: 0.8; }
+        }
+        .chicken-info {
+            display: flex; justify-content: space-around; align-items: center;
+            background: rgba(0,0,0,0.6); border: 2px solid #ffd700;
+            border-radius: 12px; padding: 10px; margin-bottom: 8px;
+            flex-shrink: 0; gap: 6px;
+        }
+        .chicken-info-item { text-align: center; flex: 1; }
+        .chicken-info-label { color: #aaa; font-size: 9px; letter-spacing: 1px; }
+        .chicken-info-value { font-family: 'Orbitron', sans-serif; color: #ffd700; font-size: 14px; font-weight: 900; margin-top: 2px; }
+        .chicken-level-selector { display: flex; gap: 6px; margin-bottom: 10px; flex-shrink: 0; }
+        .chicken-level-btn {
+            flex: 1; padding: 10px 6px; border: 2px solid #333;
+            border-radius: 10px; background: rgba(0,0,0,0.5);
+            color: white; font-size: 11px; font-weight: bold;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+        }
+        .chicken-level-btn.active { border-color: #ffd700; background: rgba(255, 215, 0, 0.15); box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); }
+        .chicken-level-btn .lv-icon { font-size: 20px; }
+        .chicken-level-btn .lv-name { font-size: 11px; }
+        .chicken-level-btn .lv-desc { font-size: 9px; opacity: 0.7; }
+        .chicken-result {
+            text-align: center; font-family: 'Orbitron', sans-serif;
+            font-size: 16px; font-weight: 900; min-height: 24px;
+            margin-bottom: 6px; flex-shrink: 0;
+        }
+        .chicken-controls { display: flex; gap: 6px; flex-shrink: 0; margin-bottom: 6px; }
+        .chicken-jump-btn {
+            flex: 2; padding: 14px; border: 2px solid #4ecca3;
+            border-radius: 10px; font-family: 'Orbitron', sans-serif;
+            font-size: 15px; font-weight: 900; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.2s;
+            background: linear-gradient(135deg, #16a085, #0d6b3f);
+            color: white;
+        }
+        .chicken-jump-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(78, 204, 163, 0.6); }
+        .chicken-jump-btn:disabled { background: #333; color: #666; border-color: #444; cursor: not-allowed; }
+        .chicken-cashout-btn {
+            flex: 1; padding: 14px; border: 2px solid #ffd700;
+            border-radius: 10px; font-family: 'Orbitron', sans-serif;
+            font-size: 13px; font-weight: 900; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.2s;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #1a1a1a;
+        }
+        .chicken-cashout-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.7); }
+        .chicken-cashout-btn:disabled { background: #333; color: #666; border-color: #444; cursor: not-allowed; }
+        .chicken-cancel-btn {
+            padding: 14px 16px; border: 2px solid #ff5252;
+            border-radius: 10px; font-family: 'Orbitron', sans-serif;
+            font-size: 12px; font-weight: 900;
+            cursor: pointer; transition: all 0.2s;
+            background: linear-gradient(135deg, #8b0000, #4a0000);
+            color: white;
+        }
+        .chicken-cancel-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 82, 82, 0.6); }
     </style>
 </head>
 <body>
     <div class="bg-pattern"></div>
+    <div class="stars">
+        <div class="star" style="top:8%;left:6%;animation-delay:0s;">✨</div>
+        <div class="star" style="top:15%;right:10%;animation-delay:1s;">⭐</div>
+        <div class="star" style="top:75%;left:8%;animation-delay:2s;">💫</div>
+        <div class="star" style="bottom:20%;right:6%;animation-delay:3s;">✨</div>
+        <div class="star" style="top:45%;left:4%;animation-delay:1.5s;">⭐</div>
+        <div class="star" style="top:60%;right:4%;animation-delay:0.5s;">💫</div>
+    </div>
 
     <!-- ===== ЗАСТАВКА ===== -->
     <div class="splash" id="splash">
@@ -619,9 +879,12 @@
                 <button class="game-btn" data-game="roulette"><span class="emoji">🎡</span><span class="name">Рулетка</span></button>
                 <button class="game-btn" data-game="blackjack"><span class="emoji">🃏</span><span class="name">Блэкджек</span></button>
                 <button class="game-btn" data-game="slots"><span class="emoji">🎰</span><span class="name">Слоты</span></button>
-                <button class="game-btn" data-game="coin"><span class="emoji">🪙</span><span class="name">Орёл/Решка</span></button>
+                <button class="game-btn" data-game="coin"><span class="emoji">🪙</span><span class="name">Монетка</span></button>
                 <button class="game-btn" data-game="mines"><span class="emoji">💣</span><span class="name">МИНЫ</span></button>
                 <button class="game-btn" data-game="fortune"><span class="emoji">🎡</span><span class="name">Колесо</span></button>
+                <button class="game-btn new-game" data-game="crash"><span class="emoji">🚀</span><span class="name">КРАШ</span></button>
+                <button class="game-btn new-game" data-game="chicken"><span class="emoji">🐔</span><span class="name">КУРИЦА</span></button>
+                <button class="game-btn" data-game="dice"><span class="emoji">🎲</span><span class="name">Кости</span></button>
             </div>
             <div class="extra-menu">
                 <button class="extra-btn" data-extra="jackpot">
@@ -806,7 +1069,6 @@
                 <button class="amount-btn" data-mines-amount="max">MAX</button>
             </div>
             <button class="spin-btn" id="minesStartBtn">💣 НАЧАТЬ ИГРУ</button>
-
             <div id="minesGameArea" style="display:none; margin-top:10px;">
                 <div class="section-label">Открывай клетки — не попади на 💣</div>
                 <div class="mines-grid" id="minesGrid"></div>
@@ -814,6 +1076,83 @@
                 <div class="mines-cashout-row">
                     <button class="mines-cashout-btn" id="minesCashoutBtn" disabled>💰 ЗАБРАТЬ</button>
                     <button class="mines-cancel-btn" id="minesCancelBtn">❌</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== КРАШ ===== -->
+        <div class="screen" id="crashScreen">
+            <div class="crash-area" id="crashArea">
+                <div class="crash-rocket" id="crashRocket">🚀</div>
+                <div class="crash-multiplier" id="crashMultiplier">×1.00</div>
+            </div>
+            <div class="crash-status" id="crashStatus">Поставь ставку и запусти ракету!</div>
+            <div class="section-label">Последние краши</div>
+            <div class="crash-history" id="crashHistory"></div>
+            <div class="section-label">Сумма ставки</div>
+            <div class="amount-row">
+                <input type="number" class="amount-input" id="crashBetAmount" placeholder="Сумма" min="1">
+                <button class="amount-btn" data-crash-amount="10">10</button>
+                <button class="amount-btn" data-crash-amount="100">100</button>
+                <button class="amount-btn" data-crash-amount="1000">1K</button>
+                <button class="amount-btn" data-crash-amount="max">MAX</button>
+            </div>
+            <button class="spin-btn" id="crashStartBtn">🚀 ЗАПУСТИТЬ</button>
+            <button class="crash-cashout-btn" id="crashCashoutBtn" disabled style="display:none; margin-top:6px;">💰 ЗАБРАТЬ</button>
+        </div>
+
+        <!-- ===== КУРИЦА ===== -->
+        <div class="screen" id="chickenScreen">
+            <div class="chicken-info">
+                <div class="chicken-info-item">
+                    <div class="chicken-info-label">СТАВКА</div>
+                    <div class="chicken-info-value" id="chickenBet">0</div>
+                </div>
+                <div class="chicken-info-item">
+                    <div class="chicken-info-label">МНОЖИТЕЛЬ</div>
+                    <div class="chicken-info-value" id="chickenMult">×1.00</div>
+                </div>
+                <div class="chicken-info-item">
+                    <div class="chicken-info-label">ЗАБРАТЬ</div>
+                    <div class="chicken-info-value" id="chickenCashout">0</div>
+                </div>
+            </div>
+            <div class="section-label">Уровень сложности</div>
+            <div class="chicken-level-selector">
+                <button class="chicken-level-btn active" data-chicken-level="easy">
+                    <span class="lv-icon">🟢</span>
+                    <span class="lv-name">Лёгкий</span>
+                    <span class="lv-desc">10 полос, 20% 🚗</span>
+                </button>
+                <button class="chicken-level-btn" data-chicken-level="medium">
+                    <span class="lv-icon">🟡</span>
+                    <span class="lv-name">Средний</span>
+                    <span class="lv-desc">15 полос, 30% 🚗</span>
+                </button>
+                <button class="chicken-level-btn" data-chicken-level="hard">
+                    <span class="lv-icon">🔴</span>
+                    <span class="lv-name">Хардкор</span>
+                    <span class="lv-desc">20 полос, 50% 🚗</span>
+                </button>
+            </div>
+            <div class="chicken-area" id="chickenArea" style="display:none;">
+                <div id="chickenRoad"></div>
+            </div>
+            <div class="chicken-result" id="chickenResult"></div>
+            <div class="section-label">Сумма ставки</div>
+            <div class="amount-row">
+                <input type="number" class="amount-input" id="chickenBetAmount" placeholder="Сумма" min="1">
+                <button class="amount-btn" data-chicken-amount="10">10</button>
+                <button class="amount-btn" data-chicken-amount="100">100</button>
+                <button class="amount-btn" data-chicken-amount="1000">1K</button>
+                <button class="amount-btn" data-chicken-amount="max">MAX</button>
+            </div>
+            <button class="spin-btn" id="chickenStartBtn">🐔 НАЧАТЬ ИГРУ</button>
+            <div id="chickenGameArea" style="display:none; margin-top:10px;">
+                <div class="chicken-controls">
+                    <button class="chicken-jump-btn" id="chickenJumpBtn">🐔 ПРЫЖОК</button>
+                    <button class="chicken-cashout-btn" id="chickenCashoutBtn" disabled>💰 ЗАБРАТЬ</button>
+                    <button class="chicken-cancel-btn" id="chickenCancelBtn">❌</button>
                 </div>
             </div>
         </div>
@@ -898,6 +1237,8 @@
                 <button class="filter-btn" data-filter="coin">🪙</button>
                 <button class="filter-btn" data-filter="mines">💣</button>
                 <button class="filter-btn" data-filter="fortune">🎡</button>
+                <button class="filter-btn" data-filter="crash">🚀</button>
+                <button class="filter-btn" data-filter="chicken">🐔</button>
             </div>
             <div id="fullHistoryList"></div>
         </div>
@@ -907,7 +1248,7 @@
     <div class="cheat-notice" id="cheatNotice">🔑 +1 000 000!</div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script>
+        <script>
         // ========== СИНХРОНИЗАЦИЯ ==========
         const TELEGRAM_USER_ID = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null;
         const API_URL = 'https://casino-bot-1wdp.onrender.com';
@@ -954,6 +1295,12 @@
             hard:   { name: '🔴 Хардкор', mines: 10, step: 0.50 }
         };
 
+        const CHICKEN_LEVELS = {
+            easy:   { name: '🟢 Лёгкий',  rows: 10, carChance: 0.20, step: 0.10 },
+            medium: { name: '🟡 Средний', rows: 15, carChance: 0.30, step: 0.20 },
+            hard:   { name: '🔴 Хардкор', rows: 20, carChance: 0.50, step: 0.50 }
+        };
+
         const FORTUNE_PRIZES = [
             { label: '❌ ПРОИГРЫШ', mult: 0, color: '#2d2d44' },
             { label: '🍒 x2', mult: 2, color: '#e94560' },
@@ -972,11 +1319,12 @@
         // ========== ИГРОК ==========
         let wallet = parseInt(localStorage.getItem('wc_wallet') || '1000');
         let rouletteHistory = JSON.parse(localStorage.getItem('wc_history') || '[]');
-        let stats = JSON.parse(localStorage.getItem('wc_stats') || '{"totalBet":0,"totalWin":0,"gamesPlayed":0,"byGame":{"roulette":0,"blackjack":0,"slots":0,"coin":0,"mines":0,"fortune":0}}');
+        let stats = JSON.parse(localStorage.getItem('wc_stats') || '{"totalBet":0,"totalWin":0,"gamesPlayed":0,"byGame":{"roulette":0,"blackjack":0,"slots":0,"coin":0,"mines":0,"fortune":0,"crash":0,"chicken":0}}');
         let jackpot = parseInt(localStorage.getItem('wc_jackpot') || '10000');
         let dailyData = JSON.parse(localStorage.getItem('wc_daily') || 'null');
         let fullHistory = JSON.parse(localStorage.getItem('wc_fullHistory') || '[]');
         let topRecords = JSON.parse(localStorage.getItem('wc_topRecords') || '[]');
+        let crashHistory = JSON.parse(localStorage.getItem('wc_crashHistory') || '[]');
 
         function saveWallet() { localStorage.setItem('wc_wallet', wallet); }
         function saveHistory() { localStorage.setItem('wc_history', JSON.stringify(rouletteHistory)); }
@@ -984,6 +1332,7 @@
         function saveJackpot() { localStorage.setItem('wc_jackpot', jackpot); }
         function saveFullHistory() { localStorage.setItem('wc_fullHistory', JSON.stringify(fullHistory)); }
         function saveTopRecords() { localStorage.setItem('wc_topRecords', JSON.stringify(topRecords)); }
+        function saveCrashHistory() { localStorage.setItem('wc_crashHistory', JSON.stringify(crashHistory)); }
 
         function updateWalletUI() {
             const w = document.getElementById('wallet');
@@ -1091,14 +1440,16 @@
                 <div class="record-item"><span>🎰 Слоты</span><span class="record-value">${stats.byGame.slots} игр</span></div>
                 <div class="record-item"><span>🪙 Орёл/Решка</span><span class="record-value">${stats.byGame.coin} игр</span></div>
                 <div class="record-item"><span>💣 Мины</span><span class="record-value">${stats.byGame.mines} игр</span></div>
+                <div class="record-item"><span>🚀 Краш</span><span class="record-value">${stats.byGame.crash} игр</span></div>
+                <div class="record-item"><span>🐔 Курица</span><span class="record-value">${stats.byGame.chicken} игр</span></div>
                 <div class="record-item"><span>🎡 Колесо</span><span class="record-value">${stats.byGame.fortune} игр</span></div>
             `;
             const top = document.getElementById('topRecords');
             if (top) {
                 if (topRecords.length === 0) { top.innerHTML = '<div class="history-empty">Пока нет рекордов</div>'; }
                 else {
-                    const icons = { roulette: '🎡', blackjack: '🃏', slots: '🎰', coin: '🪙', mines: '💣', fortune: '🎡' };
-                    const names = { roulette: 'Рулетка', blackjack: 'Блэкджек', slots: 'Слоты', coin: 'Орёл/Решка', mines: 'Мины', fortune: 'Колесо' };
+                    const icons = { roulette: '🎡', blackjack: '🃏', slots: '🎰', coin: '🪙', mines: '💣', fortune: '🎡', crash: '🚀', chicken: '🐔' };
+                    const names = { roulette: 'Рулетка', blackjack: 'Блэкджек', slots: 'Слоты', coin: 'Орёл/Решка', mines: 'Мины', fortune: 'Колесо', crash: 'Краш', chicken: 'Курица' };
                     const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
                     top.innerHTML = topRecords.map((rec, i) => `
                         <div class="top-record-item ${i === 0 ? 'gold' : (i === 1 ? 'silver' : (i === 2 ? 'bronze' : ''))}">
@@ -1118,8 +1469,8 @@
             const list = document.getElementById('fullHistoryList'); if (!list) return;
             const items = filter && filter !== 'all' ? fullHistory.filter(h => h.game === filter) : fullHistory;
             if (items.length === 0) { list.innerHTML = '<div class="history-empty">Пока пусто...</div>'; return; }
-            const icons = { roulette: '🎡', blackjack: '🃏', slots: '🎰', coin: '🪙', mines: '💣', fortune: '🎡' };
-            const names = { roulette: 'Рулетка', blackjack: 'Блэкджек', slots: 'Слоты', coin: 'Орёл/Решка', mines: 'Мины', fortune: 'Колесо Фортуны' };
+            const icons = { roulette: '🎡', blackjack: '🃏', slots: '🎰', coin: '🪙', mines: '💣', fortune: '🎡', crash: '🚀', chicken: '🐔' };
+            const names = { roulette: 'Рулетка', blackjack: 'Блэкджек', slots: 'Слоты', coin: 'Орёл/Решка', mines: 'Мины', fortune: 'Колесо', crash: 'Краш', chicken: 'Курица' };
             list.innerHTML = items.slice(0, 50).map(h => {
                 const cls = h.win > 0 ? 'win' : 'lose';
                 const profit = h.win - h.bet;
@@ -1154,6 +1505,8 @@
         function soundJackpot() { for (let i = 0; i < 8; i++) playTone(523 + i * 100, 0.1, 'square', 0.2, i * 0.1); playTone(1046, 0.5, 'square', 0.25, 0.8); }
         function soundLose() { playTone(300, 0.15, 'sawtooth', 0.15, 0); playTone(200, 0.3, 'sawtooth', 0.15, 0.15); }
         function soundCheat() { playTone(523, 0.1, 'square', 0.15, 0); playTone(659, 0.1, 'square', 0.15, 0.1); playTone(784, 0.1, 'square', 0.15, 0.2); playTone(1046, 0.2, 'square', 0.15, 0.3); }
+        function soundJump() { playTone(500, 0.08, 'sine', 0.15, 0); playTone(700, 0.1, 'sine', 0.15, 0.05); }
+        function soundCrashBoom() { playTone(150, 0.4, 'sawtooth', 0.3, 0); playTone(80, 0.6, 'sawtooth', 0.25, 0.1); }
 
         const MUSIC_TRACKS = {
             menu: [330, 392, 440, 392, 330, 294, 330, 392],
@@ -1162,6 +1515,8 @@
             slots: [523, 659, 784, 659, 523, 440, 523, 659],
             coin: [440, 494, 523, 494, 440, 415, 440, 494],
             mines: [330, 392, 494, 392, 330, 294, 330, 392],
+            crash: [523, 622, 740, 880, 740, 622, 523, 466],
+            chicken: [392, 466, 523, 466, 392, 349, 392, 466],
             fortune: [659, 784, 880, 784, 659, 587, 659, 784]
         };
 
@@ -1221,6 +1576,7 @@
             menu: document.getElementById('menuScreen'), roulette: document.getElementById('rouletteScreen'),
             blackjack: document.getElementById('blackjackScreen'), slots: document.getElementById('slotsScreen'),
             coin: document.getElementById('coinScreen'), mines: document.getElementById('minesScreen'),
+            crash: document.getElementById('crashScreen'), chicken: document.getElementById('chickenScreen'),
             fortune: document.getElementById('fortuneScreen'), stats: document.getElementById('statsScreen'),
             daily: document.getElementById('dailyScreen'), jackpot: document.getElementById('jackpotScreen'),
             history: document.getElementById('historyScreen')
@@ -1230,20 +1586,22 @@
         const TITLES = {
             menu: '🪙 ТОКЕНЫ', roulette: '🎡 РУЛЕТКА', blackjack: '🃏 БЛЭКДЖЕК',
             slots: '🎰 СЛОТЫ', coin: '🪙 ОРЁЛ / РЕШКА', mines: '💣 МИНЫ',
+            crash: '🚀 КРАШ', chicken: '🐔 КУРИЦА',
             fortune: '🎡 КОЛЕСО ФОРТУНЫ', stats: '📊 СТАТИСТИКА',
             daily: '🎁 БОНУС', jackpot: '💎 ДЖЕКПОТ', history: '📜 ИСТОРИЯ'
         };
 
         function showScreen(name) {
-            Object.values(screens).forEach(s => s.classList.remove('active'));
-            screens[name].classList.add('active');
-            screenTitle.textContent = TITLES[name];
+            Object.values(screens).forEach(s => { if (s) s.classList.remove('active'); });
+            if (screens[name]) screens[name].classList.add('active');
+            screenTitle.textContent = TITLES[name] || '🪙 ТОКЕНЫ';
             backBtn.style.display = name === 'menu' ? 'none' : 'block';
             soundClick();
             if (name === 'stats') renderStats();
             if (name === 'daily') updateDailyUI();
             if (name === 'jackpot') updateJackpotUI();
             if (name === 'history') renderFullHistory('all');
+            if (name === 'crash') renderCrashHistory();
             if (name === 'menu') startMusic('menu'); else startMusic(name);
         }
         backBtn.addEventListener('click', () => showScreen('menu'));
@@ -1430,7 +1788,8 @@
             }).join('');
         }
         renderRouletteHistory();
-    // ========== БЛЭКДЖЕК ==========
+    </script>
+            // ========== БЛЭКДЖЕК ==========
         let bjDeck = [], bjPlayerCards = [], bjDealerCards = [];
         let bjGameActive = false, bjBetAmount = 0, bjDoubled = false;
 
@@ -1479,8 +1838,8 @@
             if (bet <= 0 || bet > wallet) return;
             initAudio(); bjBetAmount = bet; bjDoubled = false;
             wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
- updateBalanceOnBot(-bet);
- bjDeck = createDeck();
+            updateBalanceOnBot(-bet);
+            bjDeck = createDeck();
             bjPlayerCards = [bjDeck.pop(), bjDeck.pop()];
             bjDealerCards = [bjDeck.pop(), bjDeck.pop()];
             bjGameActive = true;
@@ -1919,6 +2278,345 @@
             fortuneSpinning = false;
             updateFortuneButton();
         }
+                            // ========== КРАШ ==========
+        let crashActive = false;
+        let crashBetAmount = 0;
+        let crashMultiplier = 1.00;
+        let crashCrashPoint = 0;
+        let crashInterval = null;
+        let crashCashed = false;
+
+        setupAmountInput('crashBetAmount', 'crash-amount', updateCrashButton);
+        function updateCrashButton() {
+            const btn = document.getElementById('crashStartBtn');
+            if (!btn) return;
+            const bet = getBetAmount('crashBetAmount');
+            btn.disabled = crashActive || bet <= 0 || bet > wallet;
+        }
+
+        document.getElementById('crashStartBtn').addEventListener('click', startCrash);
+        document.getElementById('crashCashoutBtn').addEventListener('click', cashoutCrash);
+
+        function renderCrashHistory() {
+            const el = document.getElementById('crashHistory');
+            if (!el) return;
+            el.innerHTML = crashHistory.slice(0, 10).map(v => {
+                let cls = 'low';
+                if (v >= 2) cls = 'mid';
+                if (v >= 5) cls = 'high';
+                return `<div class="crash-history-item ${cls}">×${v.toFixed(2)}</div>`;
+            }).join('');
+        }
+
+        function startCrash() {
+            if (crashActive) return;
+            const bet = getBetAmount('crashBetAmount');
+            if (bet <= 0 || bet > wallet) return;
+            initAudio();
+            crashBetAmount = bet;
+            crashActive = true;
+            crashCashed = false;
+            crashMultiplier = 1.00;
+            // Генерация точки краха (правильная математика)
+            // 97% шанс на краш в пределах 1..100, чем выше — тем реже
+            const r = Math.random();
+            if (r < 0.03) {
+                // 3% — мгновенный краш на 1.00-1.10
+                crashCrashPoint = 1.00 + Math.random() * 0.10;
+            } else {
+                // 97% — распределение: чем выше, тем реже
+                // Формула: crash = 0.99 / (1 - r)
+                crashCrashPoint = Math.min(0.99 / (1 - r), 100.00);
+            }
+            crashCrashPoint = Math.round(crashCrashPoint * 100) / 100;
+
+            wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+            updateBalanceOnBot(-bet);
+
+            // Сброс UI
+            const rocket = document.getElementById('crashRocket');
+            const mult = document.getElementById('crashMultiplier');
+            const status = document.getElementById('crashStatus');
+            const startBtn = document.getElementById('crashStartBtn');
+            const cashoutBtn = document.getElementById('crashCashoutBtn');
+            rocket.classList.remove('explode');
+            rocket.classList.add('flying');
+            rocket.style.left = '5%';
+            rocket.style.bottom = '5%';
+            mult.textContent = '×1.00';
+            mult.className = 'crash-multiplier';
+            status.textContent = '🚀 Летим! Забирай пока не поздно!';
+            status.style.color = '#ffd700';
+            startBtn.style.display = 'none';
+            cashoutBtn.style.display = 'block';
+            cashoutBtn.disabled = false;
+            soundClick();
+
+            // Полёт
+            crashInterval = setInterval(() => {
+                if (!crashActive) return;
+                crashMultiplier += 0.01;
+                crashMultiplier = Math.round(crashMultiplier * 100) / 100;
+                mult.textContent = '×' + crashMultiplier.toFixed(2);
+
+                // Позиция ракеты
+                const progress = Math.min((crashMultiplier - 1) / 9, 1);
+                rocket.style.left = (5 + progress * 75) + '%';
+                rocket.style.bottom = (5 + progress * 70) + '%';
+
+                // Цвет
+                if (crashMultiplier >= 5) mult.className = 'crash-multiplier mega';
+                else if (crashMultiplier >= 2) mult.className = 'crash-multiplier high';
+
+                // Звук
+                if (Math.random() < 0.3) playTone(400 + crashMultiplier * 50, 0.03, 'square', 0.05, 0);
+
+                // Проверка краха
+                if (crashMultiplier >= crashCrashPoint) {
+                    boomCrash();
+                }
+            }, 100);
+        }
+
+        function boomCrash() {
+            if (!crashActive) return;
+            clearInterval(crashInterval);
+            crashInterval = null;
+            crashActive = false;
+            const rocket = document.getElementById('crashRocket');
+            const mult = document.getElementById('crashMultiplier');
+            const status = document.getElementById('crashStatus');
+            const cashoutBtn = document.getElementById('crashCashoutBtn');
+            rocket.classList.remove('flying');
+            rocket.classList.add('explode');
+            rocket.textContent = '💥';
+            mult.textContent = '💥 ×' + crashCrashPoint.toFixed(2);
+            mult.className = 'crash-multiplier';
+            status.textContent = `💥 КРАШ на ×${crashCrashPoint.toFixed(2)}!`;
+            status.style.color = '#ff5252';
+            soundCrashBoom();
+            if (!crashCashed) {
+                addHistory('crash', crashBetAmount, 0, `краш ×${crashCrashPoint.toFixed(2)}`);
+            }
+            cashoutBtn.style.display = 'none';
+            const startBtn = document.getElementById('crashStartBtn');
+            setTimeout(() => {
+                startBtn.style.display = 'block';
+                rocket.textContent = '🚀';
+                updateCrashButton();
+                // История крашей
+                crashHistory.unshift(crashCrashPoint);
+                if (crashHistory.length > 10) crashHistory = crashHistory.slice(0, 10);
+                saveCrashHistory();
+                renderCrashHistory();
+            }, 1500);
+        }
+
+        function cashoutCrash() {
+            if (!crashActive || crashCashed) return;
+            crashCashed = true;
+            clearInterval(crashInterval);
+            crashInterval = null;
+            const winAmount = Math.floor(crashBetAmount * crashMultiplier);
+            wallet += winAmount; saveWallet(); updateWalletUI();
+            updateBalanceOnBot(winAmount);
+            const status = document.getElementById('crashStatus');
+            const mult = document.getElementById('crashMultiplier');
+            status.textContent = `💰 ЗАБРАЛ ×${crashMultiplier.toFixed(2)} → +${winAmount.toLocaleString('ru-RU')}`;
+            status.style.color = '#4ecca3';
+            mult.className = 'crash-multiplier high';
+            soundWin();
+            addHistory('crash', crashBetAmount, winAmount, `забрал ×${crashMultiplier.toFixed(2)}`);
+            tryJackpot(crashBetAmount);
+            // Продолжаем полёт до краха (визуально)
+            crashInterval = setInterval(() => {
+                crashMultiplier += 0.01;
+                crashMultiplier = Math.round(crashMultiplier * 100) / 100;
+                mult.textContent = '×' + crashMultiplier.toFixed(2);
+                const progress = Math.min((crashMultiplier - 1) / 9, 1);
+                const rocket = document.getElementById('crashRocket');
+                rocket.style.left = (5 + progress * 75) + '%';
+                rocket.style.bottom = (5 + progress * 70) + '%';
+                if (crashMultiplier >= crashCrashPoint) {
+                    boomCrash();
+                }
+            }, 100);
+        }
+
+        // ========== КУРИЦА ==========
+        let chickenGame = null;
+        let chickenSelectedLevel = 'easy';
+        let chickenActive = false;
+
+        document.querySelectorAll('[data-chicken-level]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-chicken-level]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                chickenSelectedLevel = btn.dataset.chickenLevel;
+                soundClick();
+            });
+        });
+
+        setupAmountInput('chickenBetAmount', 'chicken-amount', updateChickenStartBtn);
+        function updateChickenStartBtn() {
+            const btn = document.getElementById('chickenStartBtn');
+            if (!btn) return;
+            const bet = getBetAmount('chickenBetAmount');
+            btn.disabled = chickenActive || bet <= 0 || bet > wallet;
+        }
+
+        document.getElementById('chickenStartBtn').addEventListener('click', startChicken);
+        document.getElementById('chickenJumpBtn').addEventListener('click', chickenJump);
+        document.getElementById('chickenCashoutBtn').addEventListener('click', chickenCashout);
+        document.getElementById('chickenCancelBtn').addEventListener('click', chickenCancel);
+
+        function renderChickenRoad() {
+            const road = document.getElementById('chickenRoad');
+            if (!road || !chickenGame) return;
+            const level = CHICKEN_LEVELS[chickenGame.level];
+            const totalRows = level.rows;
+            // Рисуем сверху вниз (от финиша к старту) — чтобы старт был внизу
+            let html = '';
+            for (let i = totalRows - 1; i >= 0; i--) {
+                const stepNum = i + 1;
+                const passed = i < chickenGame.currentRow;
+                const isCurrent = i === chickenGame.currentRow;
+                const stepCls = passed ? 'passed' : (isCurrent ? 'current' : '');
+                const laneCls = passed ? 'active-lane' : '';
+                const car = chickenGame.cars.has(i) ? '🚗' : '';
+                const chickenIcon = isCurrent ? '<span class="chicken-icon" id="chickenIcon">🐔</span>' : '';
+                html += `
+                    <div class="chicken-row">
+                        <div class="chicken-step ${stepCls}">${stepNum}</div>
+                        <div class="chicken-lane ${laneCls}" style="position:relative;">
+                            ${car}
+                            ${chickenIcon}
+                        </div>
+                    </div>
+                `;
+            }
+            road.innerHTML = html;
+        }
+
+        function startChicken() {
+            if (chickenActive) return;
+            const bet = getBetAmount('chickenBetAmount');
+            if (bet <= 0 || bet > wallet) return;
+            initAudio();
+            wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+            updateBalanceOnBot(-bet);
+            const level = CHICKEN_LEVELS[chickenSelectedLevel];
+            // Генерируем машины
+            const cars = new Set();
+            for (let i = 0; i < level.rows; i++) {
+                if (Math.random() < level.carChance) cars.add(i);
+            }
+            // Гарантируем хотя бы 1 машину
+            if (cars.size === 0) cars.add(Math.floor(Math.random() * level.rows));
+            chickenGame = {
+                bet: bet,
+                level: chickenSelectedLevel,
+                rows: level.rows,
+                cars: cars,
+                currentRow: 0,
+                mult: 1.0,
+                step: level.step
+            };
+            chickenActive = true;
+            document.getElementById('chickenArea').style.display = 'block';
+            document.getElementById('chickenGameArea').style.display = 'block';
+            document.getElementById('chickenStartBtn').style.display = 'none';
+            document.getElementById('chickenBet').textContent = bet.toLocaleString('ru-RU');
+            document.getElementById('chickenMult').textContent = '×1.00';
+            document.getElementById('chickenCashout').textContent = bet.toLocaleString('ru-RU');
+            document.getElementById('chickenResult').textContent = '🐔 Жми «ПРЫЖОК», чтобы двигаться!';
+            document.getElementById('chickenResult').style.color = '#ffd700';
+            document.getElementById('chickenCashoutBtn').disabled = true;
+            document.getElementById('chickenJumpBtn').disabled = false;
+            renderChickenRoad();
+            soundClick();
+        }
+
+        function chickenJump() {
+            if (!chickenGame || !chickenActive) return;
+            const nextRow = chickenGame.currentRow;
+            const chickenIcon = document.getElementById('chickenIcon');
+            if (chickenIcon) chickenIcon.classList.add('jumping');
+            soundJump();
+
+            if (chickenGame.cars.has(nextRow)) {
+                // Попал на машину
+                setTimeout(() => {
+                    const icon = document.getElementById('chickenIcon');
+                    if (icon) { icon.classList.remove('jumping'); icon.classList.add('dead'); }
+                    const car = document.querySelector(`.chicken-row:nth-child(${chickenGame.rows - nextRow}) .chicken-lane`);
+                    document.getElementById('chickenResult').textContent = `💥 МАШИНА! Проигрыш ${chickenGame.bet.toLocaleString('ru-RU')}`;
+                    document.getElementById('chickenResult').style.color = '#ff5252';
+                    soundCrashBoom();
+                    addHistory('chicken', chickenGame.bet, 0, `${CHICKEN_LEVELS[chickenGame.level].name} 💥`);
+                    chickenActive = false;
+                    setTimeout(() => { resetChicken(); }, 2500);
+                }, 300);
+                return;
+            }
+
+            // Успешный прыжок
+            chickenGame.currentRow += 1;
+            chickenGame.mult = Math.round((1 + chickenGame.currentRow * chickenGame.step) * 100) / 100;
+            const cashout = Math.floor(chickenGame.bet * chickenGame.mult);
+            document.getElementById('chickenMult').textContent = '×' + chickenGame.mult.toFixed(2);
+            document.getElementById('chickenCashout').textContent = cashout.toLocaleString('ru-RU');
+            document.getElementById('chickenCashoutBtn').disabled = false;
+            document.getElementById('chickenResult').textContent = `✅ Прыжок ${chickenGame.currentRow}/${chickenGame.rows}! Множитель ×${chickenGame.mult.toFixed(2)}`;
+            document.getElementById('chickenResult').style.color = '#4ecca3';
+            playTone(700 + chickenGame.currentRow * 40, 0.08, 'sine', 0.12, 0);
+
+            setTimeout(() => {
+                renderChickenRoad();
+            }, 350);
+
+            // Дошёл до конца?
+            if (chickenGame.currentRow >= chickenGame.rows) {
+                setTimeout(() => { chickenCashout(true); }, 400);
+            }
+        }
+
+        function chickenCashout(auto = false) {
+            if (!chickenGame || !chickenActive) return;
+            if (chickenGame.currentRow === 0) return;
+            const winAmount = Math.floor(chickenGame.bet * chickenGame.mult);
+            wallet += winAmount; saveWallet(); updateWalletUI();
+            updateBalanceOnBot(winAmount);
+            soundWin();
+            document.getElementById('chickenResult').textContent = `💰 ${auto ? 'ФИНИШ!' : 'Забрал'} ${winAmount.toLocaleString('ru-RU')} (×${chickenGame.mult.toFixed(2)})`;
+            document.getElementById('chickenResult').style.color = '#4ecca3';
+            addHistory('chicken', chickenGame.bet, winAmount, `${CHICKEN_LEVELS[chickenGame.level].name} ×${chickenGame.mult.toFixed(2)}`);
+            tryJackpot(chickenGame.bet);
+            chickenActive = false;
+            setTimeout(() => { resetChicken(); }, 2000);
+        }
+
+        function chickenCancel() {
+            if (!chickenGame || !chickenActive) return;
+            if (chickenGame.currentRow === 0) {
+                wallet += chickenGame.bet; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(chickenGame.bet);
+            }
+            resetChicken();
+        }
+
+        function resetChicken() {
+            chickenGame = null;
+            chickenActive = false;
+            document.getElementById('chickenArea').style.display = 'none';
+            document.getElementById('chickenGameArea').style.display = 'none';
+            document.getElementById('chickenStartBtn').style.display = 'block';
+            document.getElementById('chickenBet').textContent = '0';
+            document.getElementById('chickenMult').textContent = '×1.00';
+            document.getElementById('chickenCashout').textContent = '0';
+            document.getElementById('chickenResult').textContent = '';
+            updateChickenStartBtn();
+        }
 
         // ========== ФИЛЬТРЫ ИСТОРИИ ==========
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -1935,12 +2633,15 @@
         initDaily();
         updateWalletUI();
         renderRouletteHistory();
+        renderCrashHistory();
         updateSpinButton();
         updateCoinButton();
         updateJackpotUI();
         updateDailyUI();
         updateFortuneButton();
         updateMinesStartBtn();
+        updateCrashButton();
+        updateChickenStartBtn();
         syncBalanceFromBot();
 
         // ========== TELEGRAM WEBAPP ==========
