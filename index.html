@@ -574,3 +574,336 @@
         }
     </style>
 </head>
+<body>
+    <div class="bg-pattern"></div>
+
+    <!-- ===== ЗАСТАВКА ===== -->
+    <div class="splash" id="splash">
+        <div class="splash-content">
+            <div class="splash-coin">
+                <div class="splash-coin-inner">
+                    <div class="coin-face">
+                        <span class="coin-letter">Т</span>
+                    </div>
+                    <div class="coin-face back">
+                        <span class="coin-letter">Т</span>
+                    </div>
+                </div>
+            </div>
+            <h1 class="splash-title">ТОКЕНЫ</h1>
+            <div class="splash-line"></div>
+            <p class="splash-subtitle">ИГРАЙ И ЗАРАБАТЫВАЙ</p>
+            <button class="splash-btn" id="splashBtn">🪙 ИГРАТЬ</button>
+        </div>
+    </div>
+
+    <!-- ===== ИГРОВОЕ ОКНО ===== -->
+    <div class="game-wrap" id="gameWrap" style="display:none;">
+        <div class="header">
+            <button class="back-btn" id="backBtn" style="display:none;">← Меню</button>
+            <div class="wallet-display">🪙 <span id="wallet">0</span></div>
+            <h1 class="title" id="screenTitle">🪙 ТОКЕНЫ</h1>
+        </div>
+
+        <!-- ===== ГЛАВНОЕ МЕНЮ ===== -->
+        <div class="screen active" id="menuScreen">
+            <div class="menu-decor">
+                <div class="decor-star" style="top:5%;left:8%;animation-delay:0s;">✨</div>
+                <div class="decor-star" style="top:15%;right:12%;animation-delay:0.5s;">🪙</div>
+                <div class="decor-star" style="top:75%;left:6%;animation-delay:1s;">💰</div>
+                <div class="decor-star" style="bottom:18%;right:8%;animation-delay:1.5s;">💎</div>
+                <div class="decor-star" style="top:50%;left:4%;animation-delay:2s;">⭐</div>
+                <div class="decor-star" style="top:65%;right:5%;animation-delay:0.7s;">🪙</div>
+            </div>
+            <div class="main-menu">
+                <button class="game-btn" data-game="roulette"><span class="emoji">🎡</span><span class="name">Рулетка</span></button>
+                <button class="game-btn" data-game="blackjack"><span class="emoji">🃏</span><span class="name">Блэкджек</span></button>
+                <button class="game-btn" data-game="slots"><span class="emoji">🎰</span><span class="name">Слоты</span></button>
+                <button class="game-btn" data-game="coin"><span class="emoji">🪙</span><span class="name">Орёл/Решка</span></button>
+                <button class="game-btn" data-game="mines"><span class="emoji">💣</span><span class="name">МИНЫ</span></button>
+                <button class="game-btn" data-game="fortune"><span class="emoji">🎡</span><span class="name">Колесо</span></button>
+            </div>
+            <div class="extra-menu">
+                <button class="extra-btn" data-extra="jackpot">
+                    <span class="extra-icon">💎</span>
+                    <span class="extra-label">Джекпот</span>
+                    <span class="extra-value" id="menuJackpot">10K</span>
+                </button>
+                <button class="extra-btn" data-extra="daily">
+                    <span class="extra-icon">🎁</span>
+                    <span class="extra-label">Бонус</span>
+                    <span class="extra-value" id="dailyBadge">!</span>
+                </button>
+                <button class="extra-btn" data-extra="stats">
+                    <span class="extra-icon">📊</span>
+                    <span class="extra-label">Статистика</span>
+                </button>
+                <button class="extra-btn" data-extra="history">
+                    <span class="extra-icon">📜</span>
+                    <span class="extra-label">История</span>
+                </button>
+            </div>
+            <div class="bottom-tagline">
+                <div class="main-text">ИГРАЙ И ВЫИГРЫВАЙ!</div>
+                <div class="sub-text">ТОКЕНЫ • 2026</div>
+            </div>
+        </div>
+
+        <!-- ===== РУЛЕТКА ===== -->
+        <div class="screen" id="rouletteScreen">
+            <div class="wheel-container">
+                <div class="pointer">▼</div>
+                <canvas id="wheel" width="600" height="600"></canvas>
+                <div class="wheel-center">🪙</div>
+            </div>
+            <div class="result-box">
+                <div class="result-number" id="resultNumber">—</div>
+                <div class="result-text" id="resultText">Сделай ставку и крути!</div>
+            </div>
+            <div class="section-label">Тип ставки</div>
+            <div class="bet-types">
+                <div class="bet-type red" data-bet="red"><span class="icon">🔴</span><span>Красное</span><span class="mult">x2</span></div>
+                <div class="bet-type black" data-bet="black"><span class="icon">⚫</span><span>Чёрное</span><span class="mult">x2</span></div>
+                <div class="bet-type green" data-bet="green"><span class="icon">🟢</span><span>Зеро</span><span class="mult">x36</span></div>
+                <div class="bet-type number" data-bet="number"><span class="icon">🎯</span><span>Число</span><span class="mult">x36</span></div>
+            </div>
+            <div class="section-label">Сумма ставки</div>
+            <div class="amount-row">
+                <input type="number" class="amount-input" id="betAmount" placeholder="Сумма" min="1">
+                <button class="amount-btn" data-amount="10">10</button>
+                <button class="amount-btn" data-amount="100">100</button>
+                <button class="amount-btn" data-amount="1000">1K</button>
+                <button class="amount-btn" data-amount="max">MAX</button>
+            </div>
+            <button class="spin-btn" id="spinBtn" disabled>🎡 КРУТИТЬ</button>
+            <div class="section-label">Последние результаты</div>
+            <div class="history-list" id="historyList"></div>
+        </div>
+
+        <!-- ===== БЛЭКДЖЕК ===== -->
+        <div class="screen" id="blackjackScreen">
+            <div class="bj-table">
+                <div class="bj-side">
+                    <div class="bj-label">🤖 Дилер: <span id="dealerScore">0</span></div>
+                    <div class="bj-cards" id="dealerCards"></div>
+                </div>
+                <div class="bj-side">
+                    <div class="bj-label">👤 Ты: <span id="playerScore">0</span></div>
+                    <div class="bj-cards" id="playerCards"></div>
+                </div>
+            </div>
+            <div class="result-box">
+                <div class="result-text" id="bjResult">Сделай ставку и начни игру!</div>
+            </div>
+            <div class="section-label">Сумма ставки</div>
+            <div class="amount-row">
+                <input type="number" class="amount-input" id="bjBetAmount" placeholder="Сумма" min="1">
+                <button class="amount-btn" data-bj-amount="10">10</button>
+                <button class="amount-btn" data-bj-amount="100">100</button>
+                <button class="amount-btn" data-bj-amount="1000">1K</button>
+                <button class="amount-btn" data-bj-amount="max">MAX</button>
+            </div>
+            <div class="bj-controls">
+                <button class="bj-btn start" id="bjStartBtn">🎴 Начать</button>
+                <button class="bj-btn hit" id="bjHitBtn" disabled>➕ Взять</button>
+                <button class="bj-btn stand" id="bjStandBtn" disabled>✋ Хватит</button>
+                <button class="bj-btn double" id="bjDoubleBtn" disabled>💰 Удвоить</button>
+            </div>
+        </div>
+
+        <!-- ===== СЛОТЫ ===== -->
+        <div class="screen" id="slotsScreen">
+            <div class="slots-machine">
+                <div class="slots-reels">
+                    <div class="reel" id="reel1">🍒</div>
+                    <div class="reel" id="reel2">🍒</div>
+                    <div class="reel" id="reel3">🍒</div>
+                </div>
+                <div class="slots-payline">━━━━━━━━━━</div>
+            </div>
+            <div class="result-box">
+                <div class="result-text" id="slotsResult">Крути барабаны!</div>
+            </div>
+            <div class="section-label">Сумма ставки</div>
+            <div class="amount-row">
+                <input type="number" class="amount-input" id="slotsBetAmount" placeholder="Сумма" min="1">
+                <button class="amount-btn" data-slots-amount="10">10</button>
+                <button class="amount-btn" data-slots-amount="100">100</button>
+                <button class="amount-btn" data-slots-amount="1000">1K</button>
+                <button class="amount-btn" data-slots-amount="max">MAX</button>
+            </div>
+            <button class="spin-btn" id="slotsSpinBtn">🎰 КРУТИТЬ</button>
+            <div class="slots-info">🍒🍒🍒 x10 | 💎💎💎 x50 | 7️⃣7️⃣7️⃣ x100 ДЖЕКПОТ!</div>
+        </div>
+
+        <!-- ===== МОНЕТКА ===== -->
+        <div class="screen" id="coinScreen">
+            <div class="coin-container">
+                <div class="coin" id="coin">
+                    <div class="coin-side heads">🦅</div>
+                    <div class="coin-side tails">👑</div>
+                </div>
+            </div>
+            <div class="result-box">
+                <div class="result-text" id="coinResult">Выбери сторону и брось монету!</div>
+            </div>
+            <div class="section-label">Выбери сторону</div>
+            <div class="bet-types">
+                <div class="bet-type" data-coin="heads"><span class="icon">🦅</span><span>Орёл</span><span class="mult">x2</span></div>
+                <div class="bet-type" data-coin="tails"><span class="icon">👑</span><span>Решка</span><span class="mult">x2</span></div>
+            </div>
+            <div class="section-label">Сумма ставки</div>
+            <div class="amount-row">
+                <input type="number" class="amount-input" id="coinBetAmount" placeholder="Сумма" min="1">
+                <button class="amount-btn" data-coin-amount="10">10</button>
+                <button class="amount-btn" data-coin-amount="100">100</button>
+                <button class="amount-btn" data-coin-amount="1000">1K</button>
+                <button class="amount-btn" data-coin-amount="max">MAX</button>
+            </div>
+            <button class="spin-btn" id="coinFlipBtn" disabled>🪙 БРОСИТЬ</button>
+        </div>
+
+        <!-- ===== МИНЫ ===== -->
+        <div class="screen" id="minesScreen">
+            <div class="mines-info">
+                <div class="mines-info-item">
+                    <div class="mines-info-label">СТАВКА</div>
+                    <div class="mines-info-value" id="minesBet">0</div>
+                </div>
+                <div class="mines-info-item">
+                    <div class="mines-info-label">МНОЖИТЕЛЬ</div>
+                    <div class="mines-info-value" id="minesMult">×1.00</div>
+                </div>
+                <div class="mines-info-item">
+                    <div class="mines-info-label">ЗАБРАТЬ</div>
+                    <div class="mines-info-value" id="minesCashout">0</div>
+                </div>
+            </div>
+            <div class="section-label">Уровень сложности</div>
+            <div class="mines-level-selector">
+                <button class="mines-level-btn active" data-mines-level="easy">
+                    <span class="lv-icon">🟢</span>
+                    <span class="lv-name">Лёгкий</span>
+                    <span class="lv-mines">3 💣</span>
+                </button>
+                <button class="mines-level-btn" data-mines-level="medium">
+                    <span class="lv-icon">🟡</span>
+                    <span class="lv-name">Средний</span>
+                    <span class="lv-mines">5 💣</span>
+                </button>
+                <button class="mines-level-btn" data-mines-level="hard">
+                    <span class="lv-icon">🔴</span>
+                    <span class="lv-name">Хардкор</span>
+                    <span class="lv-mines">10 💣</span>
+                </button>
+            </div>
+            <div class="section-label">Сумма ставки</div>
+            <div class="amount-row">
+                <input type="number" class="amount-input" id="minesBetAmount" placeholder="Сумма" min="1">
+                <button class="amount-btn" data-mines-amount="10">10</button>
+                <button class="amount-btn" data-mines-amount="100">100</button>
+                <button class="amount-btn" data-mines-amount="1000">1K</button>
+                <button class="amount-btn" data-mines-amount="max">MAX</button>
+            </div>
+            <button class="spin-btn" id="minesStartBtn">💣 НАЧАТЬ ИГРУ</button>
+
+            <div id="minesGameArea" style="display:none; margin-top:10px;">
+                <div class="section-label">Открывай клетки — не попади на 💣</div>
+                <div class="mines-grid" id="minesGrid"></div>
+                <div class="mines-result" id="minesResult"></div>
+                <div class="mines-cashout-row">
+                    <button class="mines-cashout-btn" id="minesCashoutBtn" disabled>💰 ЗАБРАТЬ</button>
+                    <button class="mines-cancel-btn" id="minesCancelBtn">❌</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== КОЛЕСО ФОРТУНЫ ===== -->
+        <div class="screen" id="fortuneScreen">
+            <h2 class="screen-h2">🎡 КОЛЕСО ФОРТУНЫ</h2>
+            <div class="fortune-container">
+                <canvas id="fortuneWheel" width="600" height="600"></canvas>
+            </div>
+            <div class="result-box">
+                <div class="result-text" id="fortuneResult">Крути колесо — испытай удачу!</div>
+            </div>
+            <div class="fortune-prizes">
+                <div class="fortune-prize">❌ Проигрыш</div>
+                <div class="fortune-prize">🍒 x2</div>
+                <div class="fortune-prize">🍋 x3</div>
+                <div class="fortune-prize">💎 x5</div>
+                <div class="fortune-prize">🎁 x7</div>
+                <div class="fortune-prize">👑 x10</div>
+                <div class="fortune-prize" style="grid-column: span 2;"><span class="p-mult">🏆 ДЖЕКПОТ (x100)</span></div>
+            </div>
+            <div class="section-label" style="margin-top:10px;">Сумма ставки</div>
+            <div class="amount-row">
+                <input type="number" class="amount-input" id="fortuneBetAmount" placeholder="Сумма" min="1">
+                <button class="amount-btn" data-fortune-amount="10">10</button>
+                <button class="amount-btn" data-fortune-amount="100">100</button>
+                <button class="amount-btn" data-fortune-amount="1000">1K</button>
+                <button class="amount-btn" data-fortune-amount="max">MAX</button>
+            </div>
+            <button class="spin-btn" id="fortuneSpinBtn">🎡 КРУТИТЬ</button>
+            <button class="spin-btn" id="fortuneFreeSpinBtn" style="margin-top:6px;background:linear-gradient(135deg,#4ecca3,#16a085);">🎁 БЕСПЛАТНЫЙ СПИН</button>
+        </div>
+
+        <!-- ===== СТАТИСТИКА ===== -->
+        <div class="screen" id="statsScreen">
+            <h2 class="screen-h2">📊 Статистика</h2>
+            <div class="stats-grid" id="statsGrid"></div>
+            <div class="section-label">🏆 Рекорды по играм</div>
+            <div class="stats-records" id="statsRecords"></div>
+            <div class="section-label" style="margin-top:12px;">🥇 ТОП-5 выигрышей</div>
+            <div class="top-records" id="topRecords"></div>
+        </div>
+
+        <!-- ===== ЕЖЕДНЕВНЫЙ БОНУС ===== -->
+        <div class="screen" id="dailyScreen">
+            <h2 class="screen-h2">🎁 Ежедневный бонус</h2>
+            <div class="daily-streak">
+                <div class="daily-streak-text">🔥 Стрик: <span id="dailyStreak">0</span> дней подряд</div>
+                <div class="daily-days" id="dailyDays"></div>
+            </div>
+            <div class="daily-reward">
+                <div class="daily-reward-label">Награда сегодня:</div>
+                <div class="daily-reward-amount" id="dailyRewardAmount">0 🪙</div>
+            </div>
+            <button class="spin-btn" id="dailyClaimBtn" disabled>🎁 ЗАБРАТЬ</button>
+        </div>
+
+        <!-- ===== ДЖЕКПОТ ===== -->
+        <div class="screen" id="jackpotScreen">
+            <h2 class="screen-h2">💎 ДЖЕКПОТ</h2>
+            <div class="jackpot-display">
+                <div class="jackpot-label">Текущий джекпот</div>
+                <div class="jackpot-amount" id="jackpotAmount">10 000</div>
+                <div class="jackpot-label">токенов</div>
+            </div>
+            <div class="jackpot-info">
+                <p>💎 Джекпот накапливается с каждой ставки (1%)</p>
+                <p>🎰 Срывается случайно (1 из 500)</p>
+                <p>🏆 Победитель забирает ВСЁ!</p>
+            </div>
+        </div>
+
+        <!-- ===== ИСТОРИЯ ===== -->
+        <div class="screen" id="historyScreen">
+            <h2 class="screen-h2">📜 История</h2>
+            <div class="history-filters">
+                <button class="filter-btn active" data-filter="all">Все</button>
+                <button class="filter-btn" data-filter="roulette">🎡</button>
+                <button class="filter-btn" data-filter="blackjack">🃏</button>
+                <button class="filter-btn" data-filter="slots">🎰</button>
+                <button class="filter-btn" data-filter="coin">🪙</button>
+                <button class="filter-btn" data-filter="mines">💣</button>
+                <button class="filter-btn" data-filter="fortune">🎡</button>
+            </div>
+            <div id="fullHistoryList"></div>
+        </div>
+    </div>
+
+    <button class="sound-btn-bottom" id="soundBtn">🔇 Звук</button>
+    <div class="cheat-notice" id="cheatNotice">🔑 +1 000 000!</div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
