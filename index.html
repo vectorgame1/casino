@@ -16,7 +16,6 @@
             position: fixed; top: 0; left: 0;
             touch-action: none; user-select: none;
         }
-        /* ===== КРАСИВЫЙ ФОН ===== */
         .bg-pattern {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background:
@@ -40,7 +39,6 @@
             content: ''; position: absolute; inset: 0;
             background: radial-gradient(ellipse at center, transparent 25%, #000 110%);
         }
-        /* ===== ЗВЁЗДЫ НА ФОНЕ ===== */
         .stars {
             position: fixed; inset: 0; z-index: -1; pointer-events: none;
             overflow: hidden;
@@ -53,7 +51,6 @@
             0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
             50% { transform: translateY(-25px) rotate(180deg); opacity: 0.5; }
         }
-        /* ===== ЗАСТАВКА ===== */
         .splash {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 60%, #000 100%);
@@ -151,7 +148,6 @@
         }
         .splash-btn:hover { transform: scale(1.05); background: linear-gradient(135deg, #fff59d, #ffd700); }
         .splash-btn:active { transform: scale(0.98); }
-        /* ===== ИГРОВОЕ ОКНО ===== */
         .game-wrap {
             background: linear-gradient(135deg, #141414, #0a0a0a);
             padding: 10px; border-radius: 20px;
@@ -211,7 +207,6 @@
             margin-bottom: 12px; letter-spacing: 2px;
             text-shadow: 0 0 18px rgba(255, 215, 0, 0.7);
         }
-        /* ===== МЕНЮ 3x3 ===== */
         .main-menu {
             display: grid; grid-template-columns: repeat(3, 1fr);
             gap: 8px; padding: 6px 10px 0;
@@ -304,7 +299,6 @@
             0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.15; }
             50% { transform: translateY(-15px) rotate(15deg); opacity: 0.35; }
         }
-                /* ===== РУЛЕТКА ===== */
         .wheel-container {
             position: relative; width: 100%; max-width: 240px;
             aspect-ratio: 1; margin: 6px auto; flex-shrink: 0;
@@ -390,7 +384,6 @@
         .history-item.red { background: #e94560; }
         .history-item.black { background: #2d2d44; border: 1px solid #666; }
         .history-item.green { background: #4ecca3; color: #1a1a2e; }
-        /* ===== БЛЭКДЖЕК ===== */
         .bj-table {
             background: linear-gradient(135deg, #0a4d2e, #0d6b3f);
             border: 2px solid #ffd700; border-radius: 14px;
@@ -424,7 +417,6 @@
         .bj-btn.hit { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
         .bj-btn.stand { background: linear-gradient(135deg, #e67e22, #d35400); color: white; }
         .bj-btn.double { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; }
-        /* ===== СЛОТЫ ===== */
         .slots-machine {
             background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
             border-radius: 16px; padding: 16px 12px;
@@ -451,7 +443,6 @@
         }
         .slots-payline { text-align: center; color: #ffd700; font-size: 16px; margin-top: 6px; letter-spacing: 3px; }
         .slots-info { color: #ffd700; font-size: 9px; text-align: center; margin-top: 6px; opacity: 0.7; flex-shrink: 0; }
-        /* ===== МОНЕТКА ===== */
         .coin-container { display: flex; justify-content: center; align-items: center; margin: 15px 0; perspective: 1000px; flex-shrink: 0; }
         .coin { width: 120px; height: 120px; position: relative; transform-style: preserve-3d; transition: transform 2s cubic-bezier(0.4, 0.0, 0.2, 1); }
         .coin-side {
@@ -464,7 +455,6 @@
             box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 0 30px rgba(255, 215, 0, 0.6);
         }
         .coin-side.tails { transform: rotateY(180deg); }
-        /* ===== СТАТИСТИКА / БОНУС / ДЖЕКПОТ / ИСТОРИЯ ===== */
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .stat-card { background: rgba(0,0,0,0.6); border: 2px solid rgba(255, 215, 0, 0.4); border-radius: 12px; padding: 12px; text-align: center; }
         .stat-card .stat-label { color: #aaa; font-size: 10px; margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase; }
@@ -523,13 +513,11 @@
         .top-record-item .amount { font-family: 'Orbitron', sans-serif; color: #4ecca3; font-weight: bold; font-size: 14px; }
         .cheat-notice { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); background: linear-gradient(135deg, #ffd700, #ff8c00); color: #1a1a1a; padding: 20px 40px; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 900; z-index: 100; pointer-events: none; opacity: 0; transition: all 0.3s; box-shadow: 0 0 50px rgba(255, 215, 0, 0.9); border: 3px solid #fff59d; }
         .cheat-notice.show { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        /* ===== КОЛЕСО ФОРТУНЫ ===== */
         .fortune-container { display: flex; justify-content: center; align-items: center; margin: 10px 0; flex-shrink: 0; }
         #fortuneWheel { max-width: 260px; width: 100%; height: auto; border-radius: 50%; box-shadow: 0 0 40px rgba(255, 215, 0, 0.4); }
         .fortune-prizes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
         .fortune-prize { background: rgba(0,0,0,0.5); border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 8px; padding: 6px 8px; color: white; font-size: 11px; text-align: center; }
         .fortune-prize .p-mult { color: #ffd700; font-family: 'Orbitron', sans-serif; font-weight: bold; }
-        /* ===== МИНЫ ===== */
         .mines-info {
             display: flex; justify-content: space-around; align-items: center;
             background: rgba(0,0,0,0.6); border: 2px solid #ffd700;
@@ -620,7 +608,6 @@
             font-size: 16px; font-weight: 900; min-height: 24px;
             margin-bottom: 6px; flex-shrink: 0;
         }
-        /* ===== КРАШ ===== */
         .crash-area {
             position: relative; width: 100%; height: 220px;
             background: linear-gradient(180deg, #0a0a0a 0%, #1a0f1f 50%, #0a0a0a 100%);
@@ -699,7 +686,6 @@
         }
         .crash-cashout-btn:hover:not(:disabled) { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 30px rgba(255, 48, 48, 0.9); }
         .crash-cashout-btn:disabled { background: #333; color: #666; border-color: #444; cursor: not-allowed; box-shadow: none; }
-        /* ===== КУРИЦА ===== */
         .chicken-area {
             position: relative;
             background: linear-gradient(180deg, #1a3a1a 0%, #2d5a2d 100%);
@@ -837,7 +823,7 @@
         <div class="star" style="top:60%;right:4%;animation-delay:0.5s;">💫</div>
     </div>
 
-    <!-- ===== ЗАСТАВКА ===== -->
+    <!-- ЗАСТАВКА -->
     <div class="splash" id="splash">
         <div class="splash-content">
             <div class="splash-coin">
@@ -857,7 +843,7 @@
         </div>
     </div>
 
-    <!-- ===== ИГРОВОЕ ОКНО ===== -->
+    <!-- ИГРОВОЕ ОКНО -->
     <div class="game-wrap" id="gameWrap" style="display:none;">
         <div class="header">
             <button class="back-btn" id="backBtn" style="display:none;">← Меню</button>
@@ -865,7 +851,7 @@
             <h1 class="title" id="screenTitle">🪙 ТОКЕНЫ</h1>
         </div>
 
-        <!-- ===== ГЛАВНОЕ МЕНЮ ===== -->
+        <!-- ГЛАВНОЕ МЕНЮ -->
         <div class="screen active" id="menuScreen">
             <div class="menu-decor">
                 <div class="decor-star" style="top:5%;left:8%;animation-delay:0s;">✨</div>
@@ -912,7 +898,7 @@
             </div>
         </div>
 
-        <!-- ===== РУЛЕТКА ===== -->
+        <!-- РУЛЕТКА -->
         <div class="screen" id="rouletteScreen">
             <div class="wheel-container">
                 <div class="pointer">▼</div>
@@ -943,7 +929,7 @@
             <div class="history-list" id="historyList"></div>
         </div>
 
-        <!-- ===== БЛЭКДЖЕК ===== -->
+        <!-- БЛЭКДЖЕК -->
         <div class="screen" id="blackjackScreen">
             <div class="bj-table">
                 <div class="bj-side">
@@ -974,7 +960,7 @@
             </div>
         </div>
 
-        <!-- ===== СЛОТЫ ===== -->
+        <!-- СЛОТЫ -->
         <div class="screen" id="slotsScreen">
             <div class="slots-machine">
                 <div class="slots-reels">
@@ -999,7 +985,7 @@
             <div class="slots-info">🍒🍒🍒 x10 | 💎💎💎 x50 | 7️⃣7️⃣7️⃣ x100 ДЖЕКПОТ!</div>
         </div>
 
-        <!-- ===== МОНЕТКА ===== -->
+        <!-- МОНЕТКА -->
         <div class="screen" id="coinScreen">
             <div class="coin-container">
                 <div class="coin" id="coin">
@@ -1026,7 +1012,7 @@
             <button class="spin-btn" id="coinFlipBtn" disabled>🪙 БРОСИТЬ</button>
         </div>
 
-        <!-- ===== МИНЫ ===== -->
+        <!-- МИНЫ -->
         <div class="screen" id="minesScreen">
             <div class="mines-info">
                 <div class="mines-info-item">
@@ -1080,7 +1066,7 @@
             </div>
         </div>
 
-        <!-- ===== КРАШ ===== -->
+        <!-- КРАШ -->
         <div class="screen" id="crashScreen">
             <div class="crash-area" id="crashArea">
                 <div class="crash-rocket" id="crashRocket">🚀</div>
@@ -1101,7 +1087,7 @@
             <button class="crash-cashout-btn" id="crashCashoutBtn" disabled style="display:none; margin-top:6px;">💰 ЗАБРАТЬ</button>
         </div>
 
-        <!-- ===== КУРИЦА ===== -->
+        <!-- КУРИЦА -->
         <div class="screen" id="chickenScreen">
             <div class="chicken-info">
                 <div class="chicken-info-item">
@@ -1157,7 +1143,7 @@
             </div>
         </div>
 
-        <!-- ===== КОЛЕСО ФОРТУНЫ ===== -->
+        <!-- КОЛЕСО ФОРТУНЫ -->
         <div class="screen" id="fortuneScreen">
             <h2 class="screen-h2">🎡 КОЛЕСО ФОРТУНЫ</h2>
             <div class="fortune-container">
@@ -1187,7 +1173,7 @@
             <button class="spin-btn" id="fortuneFreeSpinBtn" style="margin-top:6px;background:linear-gradient(135deg,#4ecca3,#16a085);">🎁 БЕСПЛАТНЫЙ СПИН</button>
         </div>
 
-        <!-- ===== СТАТИСТИКА ===== -->
+        <!-- СТАТИСТИКА -->
         <div class="screen" id="statsScreen">
             <h2 class="screen-h2">📊 Статистика</h2>
             <div class="stats-grid" id="statsGrid"></div>
@@ -1197,7 +1183,7 @@
             <div class="top-records" id="topRecords"></div>
         </div>
 
-        <!-- ===== ЕЖЕДНЕВНЫЙ БОНУС ===== -->
+        <!-- ЕЖЕДНЕВНЫЙ БОНУС -->
         <div class="screen" id="dailyScreen">
             <h2 class="screen-h2">🎁 Ежедневный бонус</h2>
             <div class="daily-streak">
@@ -1211,7 +1197,7 @@
             <button class="spin-btn" id="dailyClaimBtn" disabled>🎁 ЗАБРАТЬ</button>
         </div>
 
-        <!-- ===== ДЖЕКПОТ ===== -->
+        <!-- ДЖЕКПОТ -->
         <div class="screen" id="jackpotScreen">
             <h2 class="screen-h2">💎 ДЖЕКПОТ</h2>
             <div class="jackpot-display">
@@ -1226,7 +1212,7 @@
             </div>
         </div>
 
-        <!-- ===== ИСТОРИЯ ===== -->
+        <!-- ИСТОРИЯ -->
         <div class="screen" id="historyScreen">
             <h2 class="screen-h2">📜 История</h2>
             <div class="history-filters">
@@ -1248,7 +1234,7 @@
     <div class="cheat-notice" id="cheatNotice">🔑 +1 000 000!</div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-        <script>
+    <script>
         // ========== СИНХРОНИЗАЦИЯ ==========
         const TELEGRAM_USER_ID = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null;
         const API_URL = 'https://casino-bot-1wdp.onrender.com';
@@ -1788,8 +1774,8 @@
             }).join('');
         }
         renderRouletteHistory();
-    </script>
-            // ========== БЛЭКДЖЕК ==========
+
+        // ========== БЛЭКДЖЕК ==========
         let bjDeck = [], bjPlayerCards = [], bjDealerCards = [];
         let bjGameActive = false, bjBetAmount = 0, bjDoubled = false;
 
@@ -1903,7 +1889,6 @@
             document.getElementById('bjStandBtn').disabled = true;
             document.getElementById('bjDoubleBtn').disabled = true;
         }
-
         // ========== СЛОТЫ ==========
         let slotsSpinning = false;
         setupAmountInput('slotsBetAmount', 'slots-amount', () => {
@@ -2278,7 +2263,8 @@
             fortuneSpinning = false;
             updateFortuneButton();
         }
-                            // ========== КРАШ ==========
+
+        // ========== КРАШ ==========
         let crashActive = false;
         let crashBetAmount = 0;
         let crashMultiplier = 1.00;
@@ -2317,15 +2303,10 @@
             crashActive = true;
             crashCashed = false;
             crashMultiplier = 1.00;
-            // Генерация точки краха (правильная математика)
-            // 97% шанс на краш в пределах 1..100, чем выше — тем реже
             const r = Math.random();
             if (r < 0.03) {
-                // 3% — мгновенный краш на 1.00-1.10
                 crashCrashPoint = 1.00 + Math.random() * 0.10;
             } else {
-                // 97% — распределение: чем выше, тем реже
-                // Формула: crash = 0.99 / (1 - r)
                 crashCrashPoint = Math.min(0.99 / (1 - r), 100.00);
             }
             crashCrashPoint = Math.round(crashCrashPoint * 100) / 100;
@@ -2333,7 +2314,6 @@
             wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
             updateBalanceOnBot(-bet);
 
-            // Сброс UI
             const rocket = document.getElementById('crashRocket');
             const mult = document.getElementById('crashMultiplier');
             const status = document.getElementById('crashStatus');
@@ -2341,6 +2321,7 @@
             const cashoutBtn = document.getElementById('crashCashoutBtn');
             rocket.classList.remove('explode');
             rocket.classList.add('flying');
+            rocket.textContent = '🚀';
             rocket.style.left = '5%';
             rocket.style.bottom = '5%';
             mult.textContent = '×1.00';
@@ -2352,26 +2333,21 @@
             cashoutBtn.disabled = false;
             soundClick();
 
-            // Полёт
             crashInterval = setInterval(() => {
                 if (!crashActive) return;
                 crashMultiplier += 0.01;
                 crashMultiplier = Math.round(crashMultiplier * 100) / 100;
                 mult.textContent = '×' + crashMultiplier.toFixed(2);
 
-                // Позиция ракеты
                 const progress = Math.min((crashMultiplier - 1) / 9, 1);
                 rocket.style.left = (5 + progress * 75) + '%';
                 rocket.style.bottom = (5 + progress * 70) + '%';
 
-                // Цвет
                 if (crashMultiplier >= 5) mult.className = 'crash-multiplier mega';
                 else if (crashMultiplier >= 2) mult.className = 'crash-multiplier high';
 
-                // Звук
                 if (Math.random() < 0.3) playTone(400 + crashMultiplier * 50, 0.03, 'square', 0.05, 0);
 
-                // Проверка краха
                 if (crashMultiplier >= crashCrashPoint) {
                     boomCrash();
                 }
@@ -2404,7 +2380,6 @@
                 startBtn.style.display = 'block';
                 rocket.textContent = '🚀';
                 updateCrashButton();
-                // История крашей
                 crashHistory.unshift(crashCrashPoint);
                 if (crashHistory.length > 10) crashHistory = crashHistory.slice(0, 10);
                 saveCrashHistory();
@@ -2428,7 +2403,6 @@
             soundWin();
             addHistory('crash', crashBetAmount, winAmount, `забрал ×${crashMultiplier.toFixed(2)}`);
             tryJackpot(crashBetAmount);
-            // Продолжаем полёт до краха (визуально)
             crashInterval = setInterval(() => {
                 crashMultiplier += 0.01;
                 crashMultiplier = Math.round(crashMultiplier * 100) / 100;
@@ -2473,9 +2447,7 @@
         function renderChickenRoad() {
             const road = document.getElementById('chickenRoad');
             if (!road || !chickenGame) return;
-            const level = CHICKEN_LEVELS[chickenGame.level];
-            const totalRows = level.rows;
-            // Рисуем сверху вниз (от финиша к старту) — чтобы старт был внизу
+            const totalRows = chickenGame.rows;
             let html = '';
             for (let i = totalRows - 1; i >= 0; i--) {
                 const stepNum = i + 1;
@@ -2506,12 +2478,10 @@
             wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
             updateBalanceOnBot(-bet);
             const level = CHICKEN_LEVELS[chickenSelectedLevel];
-            // Генерируем машины
             const cars = new Set();
             for (let i = 0; i < level.rows; i++) {
                 if (Math.random() < level.carChance) cars.add(i);
             }
-            // Гарантируем хотя бы 1 машину
             if (cars.size === 0) cars.add(Math.floor(Math.random() * level.rows));
             chickenGame = {
                 bet: bet,
@@ -2545,11 +2515,9 @@
             soundJump();
 
             if (chickenGame.cars.has(nextRow)) {
-                // Попал на машину
                 setTimeout(() => {
                     const icon = document.getElementById('chickenIcon');
                     if (icon) { icon.classList.remove('jumping'); icon.classList.add('dead'); }
-                    const car = document.querySelector(`.chicken-row:nth-child(${chickenGame.rows - nextRow}) .chicken-lane`);
                     document.getElementById('chickenResult').textContent = `💥 МАШИНА! Проигрыш ${chickenGame.bet.toLocaleString('ru-RU')}`;
                     document.getElementById('chickenResult').style.color = '#ff5252';
                     soundCrashBoom();
@@ -2560,7 +2528,6 @@
                 return;
             }
 
-            // Успешный прыжок
             chickenGame.currentRow += 1;
             chickenGame.mult = Math.round((1 + chickenGame.currentRow * chickenGame.step) * 100) / 100;
             const cashout = Math.floor(chickenGame.bet * chickenGame.mult);
@@ -2571,11 +2538,8 @@
             document.getElementById('chickenResult').style.color = '#4ecca3';
             playTone(700 + chickenGame.currentRow * 40, 0.08, 'sine', 0.12, 0);
 
-            setTimeout(() => {
-                renderChickenRoad();
-            }, 350);
+            setTimeout(() => { renderChickenRoad(); }, 350);
 
-            // Дошёл до конца?
             if (chickenGame.currentRow >= chickenGame.rows) {
                 setTimeout(() => { chickenCashout(true); }, 400);
             }
@@ -2617,7 +2581,6 @@
             document.getElementById('chickenResult').textContent = '';
             updateChickenStartBtn();
         }
-
         // ========== ФИЛЬТРЫ ИСТОРИИ ==========
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
