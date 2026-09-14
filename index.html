@@ -907,3 +907,527 @@
     <div class="cheat-notice" id="cheatNotice">🔑 +1 000 000!</div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // ========== СИНХРОНИЗАЦИЯ ==========
+        const TELEGRAM_USER_ID = (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) ? window.Telegram.WebApp.initDataUnsafe.user.id : null;
+        const API_URL = 'https://casino-bot-1wdp.onrender.com';
+
+        async function syncBalanceFromBot() {
+            if (!TELEGRAM_USER_ID) { console.log('Не в Telegram'); return; }
+            try {
+                const response = await fetch(`${API_URL}/api/balance/${TELEGRAM_USER_ID}`);
+                const data = await response.json();
+                wallet = data.balance;
+                localStorage.setItem('wc_wallet', wallet);
+                updateWalletUI();
+                console.log('✅ Синхронизирован:', wallet);
+            } catch (e) { console.log('❌ Ошибка:', e); }
+        }
+
+        async function updateBalanceOnBot(amount) {
+            if (!TELEGRAM_USER_ID) return;
+            try {
+                const response = await fetch(`${API_URL}/api/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: TELEGRAM_USER_ID, amount: amount })
+                });
+                const data = await response.json();
+                wallet = data.balance;
+                localStorage.setItem('wc_wallet', wallet);
+                updateWalletUI();
+            } catch (e) { console.log('❌ Ошибка обновления:', e); }
+        }
+
+        // ========== ДАННЫЕ ==========
+        const RED_NUMBERS = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36];
+        const BLACK_NUMBERS = [2,4,6,8,10,11,13,15,17,20,22,24,26,28,29,31,33,35];
+        const WHEEL_ORDER = [0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+        const SLOT_SYMBOLS = ['🍒', '🍋', '🍊', '🍇', '💎', '7️⃣'];
+        const SLOT_PAYOUTS = { '🍒': 10, '🍋': 15, '🍊': 20, '🍇': 25, '💎': 50, '7️⃣': 100 };
+        const CARD_SUITS = ['♠', '♥', '♦', '♣'];
+        const CARD_VALUES = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+
+        const MINES_LEVELS = {
+            easy:   { name: '🟢 Лёгкий',  mines: 3,  step: 0.15 },
+            medium: { name: '🟡 Средний', mines: 5,  step: 0.25 },
+            hard:   { name: '🔴 Хардкор', mines: 10, step: 0.50 }
+        };
+
+        const FORTUNE_PRIZES = [
+            { label: '❌ ПРОИГРЫШ', mult: 0, color: '#2d2d44' },
+            { label: '🍒 x2', mult: 2, color: '#e94560' },
+            { label: '❌ ПРОИГРЫШ', mult: 0, color: '#2d2d44' },
+            { label: '🍋 x3', mult: 3, color: '#f9a826' },
+            { label: '❌ ПРОИГРЫШ', mult: 0, color: '#2d2d44' },
+            { label: '💎 x5', mult: 5, color: '#9b59b6' },
+            { label: '❌ ПРОИГРЫШ', mult: 0, color: '#2d2d44' },
+            { label: '🎁 x7', mult: 7, color: '#16a085' },
+            { label: '❌ ПРОИГРЫШ', mult: 0, color: '#2d2d44' },
+            { label: '👑 x10', mult: 10, color: '#3498db' },
+            { label: '❌ ПРОИГРЫШ', mult: 0, color: '#2d2d44' },
+            { label: '🏆 ДЖЕКПОТ', mult: 100, color: '#ffd700' }
+        ];
+
+        // ========== ИГРОК ==========
+        let wallet = parseInt(localStorage.getItem('wc_wallet') || '1000');
+        let rouletteHistory = JSON.parse(localStorage.getItem('wc_history') || '[]');
+        let stats = JSON.parse(localStorage.getItem('wc_stats') || '{"totalBet":0,"totalWin":0,"gamesPlayed":0,"byGame":{"roulette":0,"blackjack":0,"slots":0,"coin":0,"mines":0,"fortune":0}}');
+        let jackpot = parseInt(localStorage.getItem('wc_jackpot') || '10000');
+        let dailyData = JSON.parse(localStorage.getItem('wc_daily') || 'null');
+        let fullHistory = JSON.parse(localStorage.getItem('wc_fullHistory') || '[]');
+        let topRecords = JSON.parse(localStorage.getItem('wc_topRecords') || '[]');
+
+        function saveWallet() { localStorage.setItem('wc_wallet', wallet); }
+        function saveHistory() { localStorage.setItem('wc_history', JSON.stringify(rouletteHistory)); }
+        function saveStats() { localStorage.setItem('wc_stats', JSON.stringify(stats)); }
+        function saveJackpot() { localStorage.setItem('wc_jackpot', jackpot); }
+        function saveFullHistory() { localStorage.setItem('wc_fullHistory', JSON.stringify(fullHistory)); }
+        function saveTopRecords() { localStorage.setItem('wc_topRecords', JSON.stringify(topRecords)); }
+
+        function updateWalletUI() {
+            const w = document.getElementById('wallet');
+            if (w) w.textContent = wallet.toLocaleString('ru-RU');
+        }
+
+        function addHistory(game, bet, win, detail) {
+            fullHistory.unshift({ game, bet, win, detail: detail || '', time: Date.now() });
+            if (fullHistory.length > 100) fullHistory = fullHistory.slice(0, 100);
+            saveFullHistory();
+            stats.totalBet += bet;
+            if (win > 0) stats.totalWin += win;
+            stats.gamesPlayed += 1;
+            if (stats.byGame[game] !== undefined) stats.byGame[game] += 1;
+            saveStats();
+            if (win > 0) {
+                topRecords.push({ game, win, bet, detail: detail || '', time: Date.now() });
+                topRecords.sort((a, b) => b.win - a.win);
+                topRecords = topRecords.slice(0, 5);
+                saveTopRecords();
+            }
+        }
+
+        function addToJackpot(amount) {
+            jackpot += Math.max(1, Math.floor(amount * 0.01));
+            saveJackpot(); updateJackpotUI();
+        }
+
+        function tryJackpot(bet) {
+            if (Math.random() < 1/500) {
+                const won = jackpot;
+                wallet += won;
+                jackpot = 10000;
+                saveWallet(); saveJackpot(); updateWalletUI(); updateJackpotUI();
+                updateBalanceOnBot(won);
+                soundJackpot();
+                alert(`💎 ДЖЕКПОТ! Ты выиграл ${won.toLocaleString('ru-RU')} токенов!`);
+                return true;
+            }
+            return false;
+        }
+
+        function updateJackpotUI() {
+            const el = document.getElementById('jackpotAmount');
+            if (el) el.textContent = jackpot.toLocaleString('ru-RU');
+            const m = document.getElementById('menuJackpot');
+            if (m) m.textContent = jackpot >= 1000000 ? (jackpot/1000000).toFixed(1)+'M' : (jackpot >= 1000 ? (jackpot/1000).toFixed(1)+'K' : jackpot);
+        }
+
+        function initDaily() {
+            const today = new Date().toDateString();
+            if (!dailyData) { dailyData = { lastClaim: null, streak: 0, claimedToday: false, lastFreeSpin: null, freeSpinUsed: false }; localStorage.setItem('wc_daily', JSON.stringify(dailyData)); }
+            if (dailyData.lastClaim !== today) dailyData.claimedToday = false;
+            if (dailyData.lastFreeSpin !== today) dailyData.freeSpinUsed = false;
+        }
+
+        function getDailyReward() { return 10000 + (dailyData.streak * 5000); }
+
+        function updateDailyUI() {
+            const s = document.getElementById('dailyStreak'); if (s) s.textContent = dailyData.streak;
+            const a = document.getElementById('dailyRewardAmount'); if (a) a.textContent = getDailyReward().toLocaleString('ru-RU') + ' 🪙';
+            const b = document.getElementById('dailyClaimBtn'); if (b) b.disabled = dailyData.claimedToday;
+            const d = document.getElementById('dailyDays');
+            if (d) {
+                d.innerHTML = '';
+                for (let i = 0; i < 7; i++) {
+                    const day = document.createElement('div');
+                    day.className = 'daily-day';
+                    if (i < dailyData.streak) day.classList.add('claimed');
+                    if (i === dailyData.streak && !dailyData.claimedToday) day.classList.add('today');
+                    day.innerHTML = `<div class="day-num">${i+1}</div><div class="day-icon">${i < dailyData.streak ? '✅' : '🎁'}</div>`;
+                    d.appendChild(day);
+                }
+            }
+            const bd = document.getElementById('dailyBadge');
+            if (bd) bd.textContent = dailyData.claimedToday ? '✓' : '!';
+        }
+
+        function claimDaily() {
+            if (dailyData.claimedToday) return;
+            const reward = getDailyReward();
+            wallet += reward;
+            dailyData.streak = Math.min(7, dailyData.streak + 1);
+            dailyData.claimedToday = true;
+            dailyData.lastClaim = new Date().toDateString();
+            localStorage.setItem('wc_daily', JSON.stringify(dailyData));
+            saveWallet(); updateWalletUI(); updateDailyUI();
+            updateBalanceOnBot(reward);
+            soundWin();
+            alert(`🎁 Ежедневный бонус: +${reward.toLocaleString('ru-RU')} токенов!`);
+        }
+
+        function renderStats() {
+            const grid = document.getElementById('statsGrid'); if (!grid) return;
+            grid.innerHTML = `
+                <div class="stat-card"><div class="stat-label">Всего ставок</div><div class="stat-value">${stats.totalBet.toLocaleString('ru-RU')}</div></div>
+                <div class="stat-card"><div class="stat-label">Всего выигрышей</div><div class="stat-value">${stats.totalWin.toLocaleString('ru-RU')}</div></div>
+                <div class="stat-card"><div class="stat-label">Игр сыграно</div><div class="stat-value">${stats.gamesPlayed}</div></div>
+                <div class="stat-card"><div class="stat-label">Токенов сейчас</div><div class="stat-value">${wallet.toLocaleString('ru-RU')}</div></div>
+            `;
+            const r = document.getElementById('statsRecords');
+            if (r) r.innerHTML = `
+                <div class="record-item"><span>🎡 Рулетка</span><span class="record-value">${stats.byGame.roulette} игр</span></div>
+                <div class="record-item"><span>🃏 Блэкджек</span><span class="record-value">${stats.byGame.blackjack} игр</span></div>
+                <div class="record-item"><span>🎰 Слоты</span><span class="record-value">${stats.byGame.slots} игр</span></div>
+                <div class="record-item"><span>🪙 Орёл/Решка</span><span class="record-value">${stats.byGame.coin} игр</span></div>
+                <div class="record-item"><span>💣 Мины</span><span class="record-value">${stats.byGame.mines} игр</span></div>
+                <div class="record-item"><span>🎡 Колесо</span><span class="record-value">${stats.byGame.fortune} игр</span></div>
+            `;
+            const top = document.getElementById('topRecords');
+            if (top) {
+                if (topRecords.length === 0) { top.innerHTML = '<div class="history-empty">Пока нет рекордов</div>'; }
+                else {
+                    const icons = { roulette: '🎡', blackjack: '🃏', slots: '🎰', coin: '🪙', mines: '💣', fortune: '🎡' };
+                    const names = { roulette: 'Рулетка', blackjack: 'Блэкджек', slots: 'Слоты', coin: 'Орёл/Решка', mines: 'Мины', fortune: 'Колесо' };
+                    const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+                    top.innerHTML = topRecords.map((rec, i) => `
+                        <div class="top-record-item ${i === 0 ? 'gold' : (i === 1 ? 'silver' : (i === 2 ? 'bronze' : ''))}">
+                            <div class="rank">${medals[i] || (i+1)}</div>
+                            <div class="info">
+                                <div class="game">${icons[rec.game]} ${names[rec.game]}</div>
+                                <div class="detail">Ставка: ${rec.bet.toLocaleString('ru-RU')}${rec.detail ? ' • ' + rec.detail : ''}</div>
+                            </div>
+                            <div class="amount">+${rec.win.toLocaleString('ru-RU')}</div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        function renderFullHistory(filter) {
+            const list = document.getElementById('fullHistoryList'); if (!list) return;
+            const items = filter && filter !== 'all' ? fullHistory.filter(h => h.game === filter) : fullHistory;
+            if (items.length === 0) { list.innerHTML = '<div class="history-empty">Пока пусто...</div>'; return; }
+            const icons = { roulette: '🎡', blackjack: '🃏', slots: '🎰', coin: '🪙', mines: '💣', fortune: '🎡' };
+            const names = { roulette: 'Рулетка', blackjack: 'Блэкджек', slots: 'Слоты', coin: 'Орёл/Решка', mines: 'Мины', fortune: 'Колесо Фортуны' };
+            list.innerHTML = items.slice(0, 50).map(h => {
+                const cls = h.win > 0 ? 'win' : 'lose';
+                const profit = h.win - h.bet;
+                return `<div class="history-full-item ${cls}"><div class="h-game">${icons[h.game]}</div><div class="h-info"><div class="h-name">${names[h.game]}</div><div class="h-detail">Ставка: ${h.bet.toLocaleString('ru-RU')}${h.detail ? ' • ' + h.detail : ''}</div></div><div class="h-amount">${profit >= 0 ? '+' : ''}${profit.toLocaleString('ru-RU')}</div></div>`;
+            }).join('');
+        }
+
+        // ========== ЗВУКИ ==========
+        let soundEnabled = localStorage.getItem('wc_sound') === 'on';
+        let audioCtx = null;
+        let musicInterval = null;
+        let musicPlaying = false;
+        let currentMusic = 'menu';
+
+        function initAudio() { if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {} } }
+        function playTone(freq, duration, type = 'sine', volume = 0.15, startTime = 0) {
+            if (!soundEnabled || !audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type; osc.frequency.value = freq;
+            gain.gain.setValueAtTime(volume, audioCtx.currentTime + startTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + startTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + startTime);
+            osc.stop(audioCtx.currentTime + startTime + duration);
+        }
+        function soundClick() { playTone(700, 0.05, 'square', 0.1, 0); }
+        function soundCard() { playTone(900, 0.06, 'triangle', 0.12, 0); }
+        function soundSpin() { for (let i = 0; i < 20; i++) playTone(400 + Math.random() * 200, 0.03, 'square', 0.05, i * 0.1); }
+        function soundReel() { playTone(300 + Math.random() * 200, 0.05, 'square', 0.08, 0); }
+        function soundWin() { playTone(659, 0.12, 'square', 0.2, 0); playTone(784, 0.12, 'square', 0.2, 0.12); playTone(1046, 0.12, 'square', 0.2, 0.24); playTone(1318, 0.3, 'square', 0.2, 0.36); }
+        function soundJackpot() { for (let i = 0; i < 8; i++) playTone(523 + i * 100, 0.1, 'square', 0.2, i * 0.1); playTone(1046, 0.5, 'square', 0.25, 0.8); }
+        function soundLose() { playTone(300, 0.15, 'sawtooth', 0.15, 0); playTone(200, 0.3, 'sawtooth', 0.15, 0.15); }
+        function soundCheat() { playTone(523, 0.1, 'square', 0.15, 0); playTone(659, 0.1, 'square', 0.15, 0.1); playTone(784, 0.1, 'square', 0.15, 0.2); playTone(1046, 0.2, 'square', 0.15, 0.3); }
+
+        const MUSIC_TRACKS = {
+            menu: [330, 392, 440, 392, 330, 294, 330, 392],
+            roulette: [440, 523, 659, 523, 440, 392, 440, 523],
+            blackjack: [392, 440, 523, 587, 659, 587, 523, 440],
+            slots: [523, 659, 784, 659, 523, 440, 523, 659],
+            coin: [440, 494, 523, 494, 440, 415, 440, 494],
+            mines: [330, 392, 494, 392, 330, 294, 330, 392],
+            fortune: [659, 784, 880, 784, 659, 587, 659, 784]
+        };
+
+        function playMusicNote(index, notes) {
+            if (!soundEnabled || !audioCtx || !musicPlaying) return;
+            const freq = notes[index % notes.length];
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle'; osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.25);
+        }
+        function startMusic(track) {
+            currentMusic = track;
+            stopMusic();
+            if (!soundEnabled) return;
+            musicPlaying = true;
+            let i = 0;
+            const notes = MUSIC_TRACKS[track] || MUSIC_TRACKS.menu;
+            musicInterval = setInterval(() => {
+                if (!musicPlaying || !soundEnabled) return;
+                playMusicNote(i, notes); i++;
+            }, 320);
+        }
+        function stopMusic() { musicPlaying = false; if (musicInterval) { clearInterval(musicInterval); musicInterval = null; } }
+
+        const soundBtn = document.getElementById('soundBtn');
+        soundBtn.addEventListener('click', () => {
+            initAudio();
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('wc_sound', soundEnabled ? 'on' : 'off');
+            updateSoundBtn();
+            if (soundEnabled && audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            if (!soundEnabled) stopMusic();
+            else startMusic(currentMusic);
+        });
+        function updateSoundBtn() {
+            if (soundEnabled) { soundBtn.textContent = '🔊 Звук'; soundBtn.classList.add('on'); }
+            else { soundBtn.textContent = '🔇 Звук'; soundBtn.classList.remove('on'); }
+        }
+        updateSoundBtn();
+
+        document.getElementById('splashBtn').addEventListener('click', () => {
+            initAudio();
+            if (soundEnabled && audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            soundClick();
+            document.getElementById('splash').style.display = 'none';
+            document.getElementById('gameWrap').style.display = 'flex';
+            syncBalanceFromBot();
+            updateJackpotUI(); updateDailyUI();
+            startMusic('menu');
+        });
+
+        const screens = {
+            menu: document.getElementById('menuScreen'), roulette: document.getElementById('rouletteScreen'),
+            blackjack: document.getElementById('blackjackScreen'), slots: document.getElementById('slotsScreen'),
+            coin: document.getElementById('coinScreen'), mines: document.getElementById('minesScreen'),
+            fortune: document.getElementById('fortuneScreen'), stats: document.getElementById('statsScreen'),
+            daily: document.getElementById('dailyScreen'), jackpot: document.getElementById('jackpotScreen'),
+            history: document.getElementById('historyScreen')
+        };
+        const screenTitle = document.getElementById('screenTitle');
+        const backBtn = document.getElementById('backBtn');
+        const TITLES = {
+            menu: '🪙 ТОКЕНЫ', roulette: '🎡 РУЛЕТКА', blackjack: '🃏 БЛЭКДЖЕК',
+            slots: '🎰 СЛОТЫ', coin: '🪙 ОРЁЛ / РЕШКА', mines: '💣 МИНЫ',
+            fortune: '🎡 КОЛЕСО ФОРТУНЫ', stats: '📊 СТАТИСТИКА',
+            daily: '🎁 БОНУС', jackpot: '💎 ДЖЕКПОТ', history: '📜 ИСТОРИЯ'
+        };
+
+        function showScreen(name) {
+            Object.values(screens).forEach(s => s.classList.remove('active'));
+            screens[name].classList.add('active');
+            screenTitle.textContent = TITLES[name];
+            backBtn.style.display = name === 'menu' ? 'none' : 'block';
+            soundClick();
+            if (name === 'stats') renderStats();
+            if (name === 'daily') updateDailyUI();
+            if (name === 'jackpot') updateJackpotUI();
+            if (name === 'history') renderFullHistory('all');
+            if (name === 'menu') startMusic('menu'); else startMusic(name);
+        }
+        backBtn.addEventListener('click', () => showScreen('menu'));
+        document.querySelectorAll('.game-btn').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.game)));
+        document.querySelectorAll('.extra-btn').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.extra)));
+
+        // ========== ЧИТ-КОД ==========
+        let cheatInterval = null;
+        let cheatActive = false;
+
+        function startCheat() {
+            if (cheatActive) return;
+            cheatActive = true;
+            wallet += 1000000;
+            saveWallet(); updateWalletUI();
+            updateBalanceOnBot(1000000);
+            soundCheat();
+            const notice = document.getElementById('cheatNotice');
+            notice.classList.add('show');
+            setTimeout(() => notice.classList.remove('show'), 1000);
+            cheatInterval = setInterval(() => {
+                wallet += 100000;
+                saveWallet(); updateWalletUI();
+                playTone(1000 + Math.random() * 500, 0.03, 'square', 0.08, 0);
+            }, 150);
+        }
+        function stopCheat() {
+            cheatActive = false;
+            if (cheatInterval) { clearInterval(cheatInterval); cheatInterval = null; }
+        }
+        document.addEventListener('mousedown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.button === 0) {
+                e.preventDefault();
+                startCheat();
+            }
+        });
+        document.addEventListener('mouseup', () => { if (cheatActive) stopCheat(); });
+        document.addEventListener('mouseleave', () => { if (cheatActive) stopCheat(); });
+
+        function setupAmountInput(inputId, buttonsAttr, onUpdate) {
+            const input = document.getElementById(inputId); if (!input) return;
+            const buttons = document.querySelectorAll(`[data-${buttonsAttr}]`);
+            input.addEventListener('input', () => { buttons.forEach(b => b.classList.remove('active')); if (onUpdate) onUpdate(); });
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const val = btn.getAttribute(`data-${buttonsAttr}`);
+                    if (val === 'max') input.value = wallet; else input.value = val;
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active'); soundClick();
+                    if (onUpdate) onUpdate();
+                });
+            });
+        }
+        function getBetAmount(inputId) {
+            const input = document.getElementById(inputId); if (!input) return 0;
+            const val = parseInt(input.value);
+            return isNaN(val) || val <= 0 ? 0 : val;
+        }
+
+        // ========== РУЛЕТКА ==========
+        const wheel = document.getElementById('wheel');
+        const wCtx = wheel.getContext('2d');
+        const CW = wheel.width, CH = wheel.height;
+        const CX = CW / 2, CY = CH / 2;
+        const OUTER_R = CW / 2 - 10;
+        const INNER_R = OUTER_R - 80;
+        const SECTORS = WHEEL_ORDER.length;
+        const SECTOR_ANGLE = (Math.PI * 2) / SECTORS;
+        let selectedBetType = null, selectedNumber = null, isSpinning = false, currentRotation = 0;
+
+        function getRouletteColor(num) {
+            if (num === 0) return '#4ecca3';
+            if (RED_NUMBERS.includes(num)) return '#e94560';
+            return '#2d2d44';
+        }
+        function drawWheel() {
+            wCtx.clearRect(0, 0, CW, CH);
+            wCtx.beginPath(); wCtx.arc(CX, CY, OUTER_R + 5, 0, Math.PI * 2); wCtx.fillStyle = '#ffd700'; wCtx.fill();
+            for (let i = 0; i < SECTORS; i++) {
+                const startAngle = i * SECTOR_ANGLE - Math.PI / 2;
+                const endAngle = startAngle + SECTOR_ANGLE;
+                const num = WHEEL_ORDER[i];
+                wCtx.beginPath(); wCtx.moveTo(CX, CY); wCtx.arc(CX, CY, OUTER_R, startAngle, endAngle); wCtx.closePath();
+                wCtx.fillStyle = getRouletteColor(num); wCtx.fill();
+                wCtx.strokeStyle = '#ffd700'; wCtx.lineWidth = 2; wCtx.stroke();
+                const midAngle = startAngle + SECTOR_ANGLE / 2;
+                const tx = CX + Math.cos(midAngle) * (OUTER_R - 40);
+                const ty = CY + Math.sin(midAngle) * (OUTER_R - 40);
+                wCtx.save(); wCtx.translate(tx, ty); wCtx.rotate(midAngle + Math.PI / 2);
+                wCtx.fillStyle = '#fff'; wCtx.font = 'bold 22px sans-serif';
+                wCtx.textAlign = 'center'; wCtx.textBaseline = 'middle'; wCtx.fillText(num, 0, 0);
+                wCtx.restore();
+            }
+            wCtx.beginPath(); wCtx.arc(CX, CY, INNER_R, 0, Math.PI * 2); wCtx.fillStyle = '#1a1a1a'; wCtx.fill();
+            wCtx.strokeStyle = '#ffd700'; wCtx.lineWidth = 3; wCtx.stroke();
+        }
+        drawWheel();
+
+        document.querySelectorAll('#rouletteScreen .bet-type').forEach(el => {
+            el.addEventListener('click', () => {
+                const bet = el.dataset.bet;
+                if (bet === 'number') {
+                    const numStr = prompt('Введите число от 0 до 36:', '7');
+                    if (numStr === null) return;
+                    const num = parseInt(numStr);
+                    if (isNaN(num) || num < 0 || num > 36) { alert('Неверное число!'); return; }
+                    selectedNumber = num; selectedBetType = 'number';
+                } else { selectedBetType = bet; selectedNumber = null; }
+                document.querySelectorAll('#rouletteScreen .bet-type').forEach(b => b.classList.remove('active'));
+                el.classList.add('active'); soundClick(); updateSpinButton();
+            });
+        });
+
+        setupAmountInput('betAmount', 'amount', updateSpinButton);
+        function updateSpinButton() {
+            const btn = document.getElementById('spinBtn');
+            const amt = getBetAmount('betAmount');
+            btn.disabled = isSpinning || !selectedBetType || amt <= 0 || amt > wallet;
+        }
+        document.getElementById('spinBtn').addEventListener('click', spinRoulette);
+
+        function spinRoulette() {
+            if (isSpinning) return;
+            const betAmount = getBetAmount('betAmount');
+            if (!selectedBetType || betAmount <= 0 || betAmount > wallet) return;
+            initAudio(); isSpinning = true; updateSpinButton();
+            wallet -= betAmount; saveWallet(); updateWalletUI(); addToJackpot(betAmount);
+            updateBalanceOnBot(-betAmount);
+            const resultIndex = Math.floor(Math.random() * SECTORS);
+            const resultNum = WHEEL_ORDER[resultIndex];
+            const baseAngle = -resultIndex * SECTOR_ANGLE - SECTOR_ANGLE / 2;
+            const spins = 5 + Math.floor(Math.random() * 4);
+            let targetAngle = baseAngle + Math.PI * 2 * spins;
+            while (targetAngle < currentRotation + Math.PI * 4) targetAngle += Math.PI * 2;
+            const startRotation = currentRotation, startTime = Date.now(), duration = 4500;
+            soundSpin();
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const t = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - t, 3);
+                currentRotation = startRotation + (targetAngle - startRotation) * eased;
+                wheel.style.transform = `rotate(${currentRotation}rad)`;
+                if (t < 1) requestAnimationFrame(animate);
+                else { currentRotation = targetAngle; wheel.style.transform = `rotate(${currentRotation}rad)`; finishRoulette(resultNum, betAmount); }
+            }
+            animate();
+        }
+
+        function finishRoulette(resultNum, betAmount) {
+            const resultNumEl = document.getElementById('resultNumber');
+            const resultTextEl = document.getElementById('resultText');
+            resultNumEl.textContent = resultNum;
+            resultNumEl.style.color = getRouletteColor(resultNum) === '#2d2d44' ? '#fff' : getRouletteColor(resultNum);
+            let win = false, multiplier = 0;
+            if (selectedBetType === 'red' && RED_NUMBERS.includes(resultNum)) { win = true; multiplier = 2; }
+            else if (selectedBetType === 'black' && BLACK_NUMBERS.includes(resultNum)) { win = true; multiplier = 2; }
+            else if (selectedBetType === 'green' && resultNum === 0) { win = true; multiplier = 36; }
+            else if (selectedBetType === 'number' && resultNum === selectedNumber) { win = true; multiplier = 36; }
+            const winAmount = win ? betAmount * multiplier : 0;
+            if (win) {
+                wallet += winAmount; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
+                resultTextEl.textContent = `🎉 ВЫИГРЫШ! +${winAmount.toLocaleString('ru-RU')} (x${multiplier})`;
+                resultTextEl.className = 'result-text win'; soundWin();
+            } else {
+                resultTextEl.textContent = `😢 Проигрыш -${betAmount.toLocaleString('ru-RU')}`;
+                resultTextEl.className = 'result-text lose'; soundLose();
+            }
+            addHistory('roulette', betAmount, winAmount, resultNum);
+            tryJackpot(betAmount);
+            rouletteHistory.unshift({ num: resultNum, win, bet: betAmount });
+            if (rouletteHistory.length > 10) rouletteHistory = rouletteHistory.slice(0, 10);
+            saveHistory(); renderRouletteHistory();
+            isSpinning = false; updateSpinButton();
+        }
+
+        function renderRouletteHistory() {
+            const list = document.getElementById('historyList');
+            list.innerHTML = rouletteHistory.map(h => {
+                let cls = 'black';
+                if (h.num === 0) cls = 'green';
+                else if (RED_NUMBERS.includes(h.num)) cls = 'red';
+                return `<div class="history-item ${cls}">${h.num}</div>`;
+            }).join('');
+        }
+        renderRouletteHistory();
+    </script>
