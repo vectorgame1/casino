@@ -1479,8 +1479,6 @@
             if (bet <= 0 || bet > wallet) return;
             initAudio(); bjBetAmount = bet; bjDoubled = false;
             wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
-           .
-
  updateBalanceOnBot(-bet);
  bjDeck = createDeck();
             bjPlayerCards = [bjDeck.pop(), bjDeck.pop()];
