@@ -1431,3 +1431,529 @@
         }
         renderRouletteHistory();
     </script>
+    // ========== БЛЭКДЖЕК ==========
+        let bjDeck = [], bjPlayerCards = [], bjDealerCards = [];
+        let bjGameActive = false, bjBetAmount = 0, bjDoubled = false;
+
+        function createDeck() {
+            const deck = [];
+            for (const suit of CARD_SUITS) for (const value of CARD_VALUES) deck.push({ suit, value });
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+        function cardValue(card) {
+            if (card.value === 'A') return 11;
+            if (['J','Q','K'].includes(card.value)) return 10;
+            return parseInt(card.value);
+        }
+        function handScore(cards) {
+            let score = 0, aces = 0;
+            for (const card of cards) { score += cardValue(card); if (card.value === 'A') aces++; }
+            while (score > 21 && aces > 0) { score -= 10; aces--; }
+            return score;
+        }
+        function renderCard(card, hidden = false) {
+            const isRed = card.suit === '♥' || card.suit === '♦';
+            if (hidden) return `<div class="bj-card hidden-card">🂠</div>`;
+            return `<div class="bj-card ${isRed ? 'red' : ''}"><div>${card.value}</div><div class="suit">${card.suit}</div></div>`;
+        }
+        function renderBlackjack(hideDealer = false) {
+            document.getElementById('playerCards').innerHTML = bjPlayerCards.map(c => renderCard(c)).join('');
+            document.getElementById('dealerCards').innerHTML = bjDealerCards.map((c, i) => (hideDealer && i === 1) ? renderCard(c, true) : renderCard(c)).join('');
+            document.getElementById('playerScore').textContent = handScore(bjPlayerCards);
+            document.getElementById('dealerScore').textContent = hideDealer ? '?' : handScore(bjDealerCards);
+        }
+        setupAmountInput('bjBetAmount', 'bj-amount', () => {
+            document.getElementById('bjStartBtn').disabled = bjGameActive || getBetAmount('bjBetAmount') <= 0 || getBetAmount('bjBetAmount') > wallet;
+        });
+        document.getElementById('bjStartBtn').addEventListener('click', startBlackjack);
+        document.getElementById('bjHitBtn').addEventListener('click', bjHit);
+        document.getElementById('bjStandBtn').addEventListener('click', bjStand);
+        document.getElementById('bjDoubleBtn').addEventListener('click', bjDouble);
+
+        function startBlackjack() {
+            if (bjGameActive) return;
+            const bet = getBetAmount('bjBetAmount');
+            if (bet <= 0 || bet > wallet) return;
+            initAudio(); bjBetAmount = bet; bjDoubled = false;
+            wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+           .
+
+ updateBalanceOnBot(-bet);
+            bj---
+
+Deck = createDeck**();
+            bjPlayerCards = [bjDeck.pop(), bjDeck.pop()];
+            bjDealerCards = [bjDeck.pop(), bjDeck.pop()];
+            bjGameActive = true;
+            renderBlackjack(true); soundCard();
+            document.getElementById('bjResult').textContent = 'Твой ход!';
+            document.getElementById('bjResult').className = 'result-text';
+            document.getElementById('bjStartBtn').disabled = true;
+            document.getElementById('bjHitBtn').disabled = false;
+            document.getElementById('bjStandBtn').disabled = false;
+            document.getElementById('bjDoubleBtn').disabled = wallet < bet;
+        }
+        function bjHit() {
+            if (!bjGameActive) return;
+            bjPlayerCards.push(bjDeck.pop()); soundCard(); renderBlackjack(true);
+            const s = handScore(bjPlayerCards);
+            if (s > 21) endBlackjack('bust');
+            else if (s === 21) bjStand();
+        }
+        function bjStand() {
+            if (!bjGameActive) return;
+            while (handScore(bjDealerCards) < 17) bjDealerCards.push(bjDeck.pop());
+            renderBlackjack(false);
+            const p = handScore(bjPlayerCards), d = handScore(bjDealerCards);
+            if (d > 21) endBlackjack('dealer_bust');
+            else if (p > d) endBlackjack('win');
+            else if (p < d) endBlackjack('lose');
+            else endBlackjack('push');
+        }
+        function bjDouble() {
+            if (!bjGameActive || wallet < bjBetAmount) return;
+            wallet -= bjBetAmount; saveWallet(); updateWalletUI();
+            updateBalanceOnBot(-bjBetAmount);
+            bjDoubled = true;
+            bjPlayerCards.push(bjDeck.pop()); soundCard(); renderBlackjack(true);
+            if (handScore(bjPlayerCards) > 21) endBlackjack('bust'); else bjStand();
+        }
+        function endBlackjack(result) {
+            bjGameActive = false;
+            const p = handScore(bjPlayerCards), d = handScore(bjDealerCards);
+            const resultEl = document.getElementById('bjResult');
+            const finalBet = bjDoubled ? bjBetAmount * 2 : bjBetAmount;
+            renderBlackjack(false);
+            let winAmount = 0;
+            if (result === 'win' || result === 'dealer_bust') {
+                winAmount = finalBet * 2; wallet += winAmount; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
+                resultEl.textContent = `🎉 ПОБЕДА! +${(winAmount - finalBet).toLocaleString('ru-RU')} (${p} vs ${d})`;
+                resultEl.className = 'result-text win'; soundWin();
+            } else if (result === 'push') {
+                wallet += finalBet; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(finalBet);
+                resultEl.textContent = `🤝 Ничья! (${p})`; resultEl.className = 'result-text';
+            } else {
+                resultEl.textContent = `😢 Проигрыш -${finalBet.toLocaleString('ru-RU')} (${p} vs ${d})`;
+                resultEl.className = 'result-text lose'; soundLose();
+            }
+            addHistory('blackjack', finalBet, winAmount, `${p} vs ${d}`);
+            tryJackpot(finalBet);
+            document.getElementById('bjStartBtn').disabled = false;
+            document.getElementById('bjHitBtn').disabled = true;
+            document.getElementById('bjStandBtn').disabled = true;
+            document.getElementById('bjDoubleBtn').disabled = true;
+        }
+
+        // ========== СЛОТЫ ==========
+        let slotsSpinning = false;
+        setupAmountInput('slotsBetAmount', 'slots-amount', () => {
+            document.getElementById('slotsSpinBtn').disabled = slotsSpinning || getBetAmount('slotsBetAmount') <= 0 || getBetAmount('slotsBetAmount') > wallet;
+        });
+        document.getElementById('slotsSpinBtn').addEventListener('click', spinSlots);
+
+        function spinSlots() {
+            if (slotsSpinning) return;
+            const bet = getBetAmount('slotsBetAmount');
+            if (bet <= 0 || bet > wallet) return;
+            initAudio(); slotsSpinning = true;
+            document.getElementById('slotsSpinBtn').disabled = true;
+            wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+            updateBalanceOnBot(-bet);
+            const result = [
+                SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)],
+                SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)],
+                SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)]
+            ];
+            const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
+            reels.forEach(r => r.classList.add('spinning'));
+            const spinInterval = setInterval(() => {
+                soundReel();
+                reels.forEach(r => r.textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)]);
+            }, 80);
+            [1200, 1800, 2400].forEach((time, i) => {
+                setTimeout(() => { reels[i].classList.remove('spinning'); reels[i].textContent = result[i]; }, time);
+            });
+            setTimeout(() => { clearInterval(spinInterval); slotsSpinning = false; finishSlots(result, bet); }, 2600);
+        }
+
+        function finishSlots(result, bet) {
+            const resultEl = document.getElementById('slotsResult');
+            let winAmount = 0;
+            if (result[0] === result[1] && result[1] === result[2]) {
+                const mult = SLOT_PAYOUTS[result[0]] || 10;
+                winAmount = bet * mult;
+                resultEl.textContent = `🎉 ДЖЕКПОТ! ${result.join(' ')} x${mult} → +${winAmount.toLocaleString('ru-RU')}!`;
+                resultEl.className = 'result-text win'; soundJackpot();
+            } else if (result[0] === result[1] || result[1] === result[2] || result[0] === result[2]) {
+                winAmount = bet * 2;
+                resultEl.textContent = `✨ ${result.join(' ')} x2 → +${winAmount.toLocaleString('ru-RU')}!`;
+                resultEl.className = 'result-text win'; soundWin();
+            } else {
+                resultEl.textContent = `😢 ${result.join(' ')} -${bet.toLocaleString('ru-RU')}`;
+                resultEl.className = 'result-text lose'; soundLose();
+            }
+            if (winAmount > 0) { wallet += winAmount; saveWallet(); updateWalletUI(); updateBalanceOnBot(winAmount); }
+            addHistory('slots', bet, winAmount, result.join(' '));
+            tryJackpot(bet);
+            document.getElementById('slotsSpinBtn').disabled = false;
+        }
+
+        // ========== ОРЁЛ / РЕШКА ==========
+        let coinChoice = null, coinFlipping = false;
+        document.querySelectorAll('[data-coin]').forEach(el => {
+            el.addEventListener('click', () => {
+                coinChoice = el.dataset.coin;
+                document.querySelectorAll('[data-coin]').forEach(b => b.classList.remove('active'));
+                el.classList.add('active'); soundClick(); updateCoinButton();
+            });
+        });
+        setupAmountInput('coinBetAmount', 'coin-amount', updateCoinButton);
+        function updateCoinButton() {
+            const btn = document.getElementById('coinFlipBtn');
+            const bet = getBetAmount('coinBetAmount');
+            btn.disabled = coinFlipping || !coinChoice || bet <= 0 || bet > wallet;
+        }
+        document.getElementById('coinFlipBtn').addEventListener('click', flipCoin);
+        function flipCoin() {
+            if (coinFlipping) return;
+            const bet = getBetAmount('coinBetAmount');
+            if (!coinChoice || bet <= 0 || bet > wallet) return;
+            initAudio(); coinFlipping = true; updateCoinButton();
+            wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+            updateBalanceOnBot(-bet);
+            const result = Math.random() < 0.5 ? 'heads' : 'tails';
+            const coin = document.getElementById('coin');
+            const flips = 5 + Math.random() * 3;
+            const targetRotation = 360 * flips + (result === 'tails' ? 180 : 0);
+            coin.style.transform = `rotateY(${targetRotation}deg)`;
+            soundSpin();
+            setTimeout(() => finishCoin(result, bet), 2100);
+        }
+        function finishCoin(result, bet) {
+            const resultEl = document.getElementById('coinResult');
+            const resultName = result === 'heads' ? '🦅 Орёл' : '👑 Решка';
+            const win = result === coinChoice;
+            let winAmount = 0;
+            if (win) {
+                winAmount = bet * 2; wallet += winAmount; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
+                resultEl.textContent = `🎉 ${resultName}! +${winAmount.toLocaleString('ru-RU')}`;
+                resultEl.className = 'result-text win'; soundWin();
+            } else {
+                resultEl.textContent = `😢 ${resultName}. -${bet.toLocaleString('ru-RU')}`;
+                resultEl.className = 'result-text lose'; soundLose();
+            }
+            addHistory('coin', bet, winAmount, resultName);
+            tryJackpot(bet);
+            setTimeout(() => {
+                const coin = document.getElementById('coin');
+                coin.style.transition = 'none';
+                coin.style.transform = 'rotateY(0deg)';
+                setTimeout(() => { coin.style.transition = 'transform 2s cubic-bezier(0.4, 0.0, 0.2, 1)'; }, 50);
+            }, 1500);
+            coinFlipping = false; updateCoinButton();
+        }
+
+        // ========== МИНЫ ==========
+        let minesGame = null;
+        let minesSelectedLevel = 'easy';
+
+        document.querySelectorAll('[data-mines-level]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-mines-level]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                minesSelectedLevel = btn.dataset.minesLevel;
+                soundClick();
+            });
+        });
+
+        setupAmountInput('minesBetAmount', 'mines-amount', updateMinesStartBtn);
+        function updateMinesStartBtn() {
+            const btn = document.getElementById('minesStartBtn');
+            if (!btn) return;
+            const bet = getBetAmount('minesBetAmount');
+            btn.disabled = !!minesGame || bet <= 0 || bet > wallet;
+        }
+
+        document.getElementById('minesStartBtn').addEventListener('click', startMines);
+        document.getElementById('minesCashoutBtn').addEventListener('click', cashoutMines);
+        document.getElementById('minesCancelBtn').addEventListener('click', cancelMines);
+
+        function startMines() {
+            if (minesGame) return;
+            const bet = getBetAmount('minesBetAmount');
+            if (bet <= 0 || bet > wallet) return;
+            initAudio();
+            wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+            updateBalanceOnBot(-bet);
+            const level = MINES_LEVELS[minesSelectedLevel];
+            const positions = Array.from({length: 25}, (_, i) => i);
+            for (let i = positions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [positions[i], positions[j]] = [positions[j], positions[i]];
+            }
+            const minesPositions = new Set(positions.slice(0, level.mines));
+            minesGame = {
+                bet: bet,
+                level: minesSelectedLevel,
+                mines: minesPositions,
+                opened: new Set(),
+                mult: 1.0,
+                safeTotal: 25 - level.mines
+            };
+            document.getElementById('minesGameArea').style.display = 'block';
+            document.getElementById('minesStartBtn').disabled = true;
+            document.getElementById('minesBet').textContent = bet.toLocaleString('ru-RU');
+            document.getElementById('minesMult').textContent = '×1.00';
+            document.getElementById('minesCashout').textContent = bet.toLocaleString('ru-RU');
+            document.getElementById('minesResult').textContent = '';
+            document.getElementById('minesResult').style.color = '#ffd700';
+            renderMinesGrid();
+            soundClick();
+        }
+
+        function renderMinesGrid() {
+            const grid = document.getElementById('minesGrid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'mine-cell';
+                cell.dataset.idx = i;
+                if (minesGame.opened.has(i)) {
+                    cell.classList.add('opened', 'disabled');
+                    if (minesGame.mines.has(i)) {
+                        cell.classList.add('bomb');
+                        cell.textContent = '💣';
+                    } else {
+                        cell.classList.add('gem');
+                        cell.textContent = '💎';
+                    }
+                } else {
+                    cell.addEventListener('click', () => openMineCell(i));
+                }
+                grid.appendChild(cell);
+            }
+            const cashoutBtn = document.getElementById('minesCashoutBtn');
+            cashoutBtn.disabled = minesGame.opened.size === 0;
+        }
+
+        function openMineCell(idx) {
+            if (!minesGame || minesGame.opened.has(idx)) return;
+            const cell = document.querySelector(`.mine-cell[data-idx="${idx}"]`);
+            if (minesGame.mines.has(idx)) {
+                soundLose();
+                minesGame.opened.add(idx);
+                cell.classList.add('opened', 'disabled', 'bomb');
+                cell.textContent = '💣';
+                minesGame.mines.forEach(m => {
+                    const c = document.querySelector(`.mine-cell[data-idx="${m}"]`);
+                    if (c && !c.classList.contains('opened')) {
+                        c.classList.add('opened', 'disabled', 'bomb');
+                        c.textContent = '💣';
+                    }
+                });
+                const result = document.getElementById('minesResult');
+                result.textContent = `💥 БУМ! Проигрыш ${minesGame.bet.toLocaleString('ru-RU')}`;
+                result.style.color = '#ff5252';
+                addHistory('mines', minesGame.bet, 0, `${MINES_LEVELS[minesGame.level].name} 💥`);
+                setTimeout(() => { resetMines(); }, 2500);
+                return;
+            }
+            soundReel();
+            minesGame.opened.add(idx);
+            cell.classList.add('opened', 'disabled', 'gem');
+            cell.textContent = '💎';
+            const step = MINES_LEVELS[minesGame.level].step;
+            minesGame.mult = Math.round((1 + minesGame.opened.size * step) * 100) / 100;
+            const cashout = Math.floor(minesGame.bet * minesGame.mult);
+            document.getElementById('minesMult').textContent = '×' + minesGame.mult.toFixed(2);
+            document.getElementById('minesCashout').textContent = cashout.toLocaleString('ru-RU');
+            document.getElementById('minesCashoutBtn').disabled = false;
+            if (minesGame.opened.size === minesGame.safeTotal) {
+                cashoutMines();
+            }
+        }
+
+        function cashoutMines() {
+            if (!minesGame || minesGame.opened.size === 0) return;
+            const winAmount = Math.floor(minesGame.bet * minesGame.mult);
+            wallet += winAmount; saveWallet(); updateWalletUI();
+            updateBalanceOnBot(winAmount);
+            soundWin();
+            const result = document.getElementById('minesResult');
+            result.textContent = `💰 Забрал ${winAmount.toLocaleString('ru-RU')} (×${minesGame.mult.toFixed(2)})`;
+            result.style.color = '#4ecca3';
+            addHistory('mines', minesGame.bet, winAmount, `${MINES_LEVELS[minesGame.level].name} ×${minesGame.mult.toFixed(2)}`);
+            tryJackpot(minesGame.bet);
+            setTimeout(() => { resetMines(); }, 2000);
+        }
+
+        function cancelMines() {
+            if (!minesGame) return;
+            if (minesGame.opened.size === 0) {
+                wallet += minesGame.bet; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(minesGame.bet);
+            }
+            resetMines();
+        }
+
+        function resetMines() {
+            minesGame = null;
+            document.getElementById('minesGameArea').style.display = 'none';
+            document.getElementById('minesGrid').innerHTML = '';
+            document.getElementById('minesMult').textContent = '×1.00';
+            document.getElementById('minesCashout').textContent = '0';
+            document.getElementById('minesBet').textContent = '0';
+            document.getElementById('minesResult').textContent = '';
+            updateMinesStartBtn();
+        }
+
+        // ========== КОЛЕСО ФОРТУНЫ ==========
+        const fortuneWheel = document.getElementById('fortuneWheel');
+        const fCtx = fortuneWheel.getContext('2d');
+        const FW = fortuneWheel.width, FH = fortuneWheel.height;
+        const FCX = FW / 2, FCY = FH / 2;
+        const F_OUTER = FW / 2 - 10;
+        const F_INNER = F_OUTER - 100;
+        const F_SECTORS = FORTUNE_PRIZES.length;
+        const F_ANGLE = (Math.PI * 2) / F_SECTORS;
+        let fortuneRotation = 0;
+        let fortuneSpinning = false;
+
+        function drawFortuneWheel() {
+            fCtx.clearRect(0, 0, FW, FH);
+            fCtx.beginPath(); fCtx.arc(FCX, FCY, F_OUTER + 5, 0, Math.PI * 2);
+            fCtx.fillStyle = '#ffd700'; fCtx.fill();
+            for (let i = 0; i < F_SECTORS; i++) {
+                const startAngle = i * F_ANGLE - Math.PI / 2;
+                const endAngle = startAngle + F_ANGLE;
+                const prize = FORTUNE_PRIZES[i];
+                fCtx.beginPath(); fCtx.moveTo(FCX, FCY);
+                fCtx.arc(FCX, FCY, F_OUTER, startAngle, endAngle);
+                fCtx.closePath();
+                fCtx.fillStyle = prize.color; fCtx.fill();
+                fCtx.strokeStyle = '#ffd700'; fCtx.lineWidth = 3; fCtx.stroke();
+                const midAngle = startAngle + F_ANGLE / 2;
+                const tx = FCX + Math.cos(midAngle) * (F_OUTER - 60);
+                const ty = FCY + Math.sin(midAngle) * (F_OUTER - 60);
+                fCtx.save(); fCtx.translate(tx, ty); fCtx.rotate(midAngle + Math.PI / 2);
+                fCtx.fillStyle = '#fff'; fCtx.font = 'bold 20px sans-serif';
+                fCtx.textAlign = 'center'; fCtx.textBaseline = 'middle';
+                fCtx.fillText(prize.label, 0, 0);
+                fCtx.restore();
+            }
+            fCtx.beginPath(); fCtx.arc(FCX, FCY, F_INNER, 0, Math.PI * 2);
+            fCtx.fillStyle = '#1a1a1a'; fCtx.fill();
+            fCtx.strokeStyle = '#ffd700'; fCtx.lineWidth = 3; fCtx.stroke();
+        }
+        drawFortuneWheel();
+
+        setupAmountInput('fortuneBetAmount', 'fortune-amount', updateFortuneButton);
+        function updateFortuneButton() {
+            const bet = getBetAmount('fortuneBetAmount');
+            document.getElementById('fortuneSpinBtn').disabled = fortuneSpinning || bet <= 0 || bet > wallet;
+        }
+        document.getElementById('fortuneSpinBtn').addEventListener('click', () => spinFortune(false));
+        document.getElementById('fortuneFreeSpinBtn').addEventListener('click', () => spinFortune(true));
+
+        function spinFortune(free) {
+            if (fortuneSpinning) return;
+            const bet = free ? 0 : getBetAmount('fortuneBetAmount');
+            if (!free && (bet <= 0 || bet > wallet)) return;
+            if (free && dailyData.freeSpinUsed) { alert('Бесплатный спин уже использован сегодня!'); return; }
+            initAudio(); fortuneSpinning = true; updateFortuneButton();
+            if (!free) {
+                wallet -= bet; saveWallet(); updateWalletUI(); addToJackpot(bet);
+                updateBalanceOnBot(-bet);
+            }
+            const resultIndex = Math.floor(Math.random() * F_SECTORS);
+            const prize = FORTUNE_PRIZES[resultIndex];
+            const baseAngle = -resultIndex * F_ANGLE - F_ANGLE / 2;
+            const spins = 6 + Math.floor(Math.random() * 4);
+            let targetAngle = baseAngle + Math.PI * 2 * spins;
+            while (targetAngle < fortuneRotation + Math.PI * 4) targetAngle += Math.PI * 2;
+            const startRotation = fortuneRotation, startTime = Date.now(), duration = 5000;
+            soundSpin();
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const t = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - t, 3);
+                fortuneRotation = startRotation + (targetAngle - startRotation) * eased;
+                fortuneWheel.style.transform = `rotate(${fortuneRotation}rad)`;
+                if (t < 1) requestAnimationFrame(animate);
+                else { fortuneRotation = targetAngle; fortuneWheel.style.transform = `rotate(${fortuneRotation}rad)`; finishFortune(prize, bet, free); }
+            }
+            animate();
+        }
+
+        function finishFortune(prize, bet, free) {
+            const resultEl = document.getElementById('fortuneResult');
+            let winAmount = 0;
+            if (prize.mult === 0) {
+                winAmount = 0;
+                resultEl.textContent = `😢 ${prize.label} -${(free ? 0 : bet).toLocaleString('ru-RU')} токенов`;
+                resultEl.className = 'result-text lose'; soundLose();
+            } else if (prize.label.includes('ДЖЕКПОТ')) {
+                winAmount = jackpot;
+                jackpot = 10000;
+                saveJackpot(); updateJackpotUI();
+                wallet += winAmount; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
+                resultEl.textContent = `🏆 ДЖЕКПОТ! +${winAmount.toLocaleString('ru-RU')} токенов!`;
+                resultEl.className = 'result-text win'; soundJackpot();
+            } else {
+                winAmount = prize.mult * (free ? 1000 : bet);
+                wallet += winAmount; saveWallet(); updateWalletUI();
+                updateBalanceOnBot(winAmount);
+                resultEl.textContent = `🎉 ${prize.label}! +${winAmount.toLocaleString('ru-RU')} токенов!`;
+                resultEl.className = 'result-text win'; soundWin();
+            }
+            if (free) {
+                dailyData.freeSpinUsed = true;
+                dailyData.lastFreeSpin = new Date().toDateString();
+                localStorage.setItem('wc_daily', JSON.stringify(dailyData));
+            }
+            addHistory('fortune', free ? 0 : bet, winAmount, prize.label);
+            if (!free && winAmount > 0) tryJackpot(bet);
+            fortuneSpinning = false;
+            updateFortuneButton();
+        }
+
+        // ========== ФИЛЬТРЫ ИСТОРИИ ==========
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active'); soundClick();
+                renderFullHistory(btn.dataset.filter);
+            });
+        });
+        document.getElementById('dailyClaimBtn').addEventListener('click', claimDaily);
+
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
+        if (wallet <= 0) { wallet = 10000; saveWallet(); }
+        initDaily();
+        updateWalletUI();
+        renderRouletteHistory();
+        updateSpinButton();
+        updateCoinButton();
+        updateJackpotUI();
+        updateDailyUI();
+        updateFortuneButton();
+        updateMinesStartBtn();
+        syncBalanceFromBot();
+
+        // ========== TELEGRAM WEBAPP ==========
+        if (window.Telegram && window.Telegram.WebApp) {
+            document.body.classList.add('tg-mode');
+            window.Telegram.WebApp.expand();
+            window.Telegram.WebApp.ready();
+        }
+    </script>
+</body>
+</html>
