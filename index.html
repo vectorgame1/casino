@@ -1218,6 +1218,90 @@
             font-weight: bold;
             font-size: 14px;
         }
+        
+        /* ========== BIG WIN (БОЛЬШОЙ ВЫИГРЫШ) ========== */
+        #bigWinOverlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        #bigWinOverlay.show {
+            display: flex;
+        }
+        #bigWinOverlay::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+            animation: bigWinFlash 0.6s ease-out;
+        }
+        @keyframes bigWinFlash {
+            0% { opacity: 1; transform: scale(0.5); }
+            100% { opacity: 0; transform: scale(1.5); }
+        }
+        .big-win-text {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 72px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            color: #ffd700;
+            text-shadow: 
+                0 0 20px #ffd700,
+                0 0 40px #ff8c00,
+                0 0 80px #ff8c00,
+                0 5px 0 #8a6d00,
+                0 10px 30px rgba(0,0,0,0.9);
+            text-align: center;
+            padding: 20px;
+            z-index: 2;
+            animation: bigWinPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+        }
+        @keyframes bigWinPop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            60% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .big-win-text.green {
+            color: #4ecca3;
+            text-shadow: 0 0 20px #4ecca3, 0 0 40px #16a085, 0 0 80px #16a085, 0 5px 0 #0d4a2e, 0 10px 30px rgba(0,0,0,0.9);
+        }
+        .big-win-text.blue {
+            color: #00d2ff;
+            text-shadow: 0 0 20px #00d2ff, 0 0 40px #0066cc, 0 0 80px #0066cc, 0 5px 0 #003d7a, 0 10px 30px rgba(0,0,0,0.9);
+        }
+        .big-win-text.red {
+            color: #ff5252;
+            text-shadow: 0 0 20px #ff5252, 0 0 40px #8b0000, 0 0 80px #8b0000, 0 5px 0 #4a0000, 0 10px 30px rgba(0,0,0,0.9);
+        }
+        .big-win-text.purple {
+            color: #b06dff;
+            text-shadow: 0 0 20px #b06dff, 0 0 40px #6a1b9a, 0 0 80px #6a1b9a, 0 5px 0 #3a0a5a, 0 10px 30px rgba(0,0,0,0.9);
+        }
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            top: -20px;
+            animation: confettiFall 2.5s linear forwards;
+            z-index: 1;
+        }
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
         .cheat-notice {
             position: fixed;
             top: 50%;
@@ -1589,6 +1673,9 @@
     </div>
 
     <button class="sound-btn-bottom" id="soundBtn">🔇 Sound</button>
+        <div id="bigWinOverlay">
+        <div class="big-win-text" id="bigWinText"></div>
+    </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <script>
@@ -1847,6 +1934,37 @@
         function soundLose() { playTone(300, 0.15, 'sawtooth', 0.15, 0); playTone(200, 0.3, 'sawtooth', 0.15, 0.15); }
         function soundJump() { playTone(500, 0.08, 'sine', 0.15, 0); playTone(700, 0.1, 'sine', 0.15, 0.05); }
         function soundCrashBoom() { playTone(150, 0.4, 'sawtooth', 0.3, 0); playTone(80, 0.6, 'sawtooth', 0.25, 0.1); }
+                    // ========== BIG WIN (БОЛЬШОЙ ВЫИГРЫШ) ==========
+        function showBigWin(text, color = 'gold') {
+            const overlay = document.getElementById('bigWinOverlay');
+            const textEl = document.getElementById('bigWinText');
+            if (!overlay || !textEl) return;
+            
+            textEl.textContent = text;
+            textEl.className = 'big-win-text' + (color !== 'gold' ? ' ' + color : '');
+            overlay.classList.add('show');
+            
+            // Конфетти
+            const colors = ['#ffd700', '#ff8c00', '#4ecca3', '#ff5252', '#b06dff', '#00d2ff'];
+            for (let i = 0; i < 80; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 0.5 + 's';
+                piece.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+                piece.style.width = (6 + Math.random() * 10) + 'px';
+                piece.style.height = piece.style.width;
+                piece.style.borderRadius = Math.random() < 0.5 ? '50%' : '2px';
+                overlay.appendChild(piece);
+                setTimeout(() => piece.remove(), 4000);
+            }
+            
+            // Скрыть через 2.5 сек
+            setTimeout(() => {
+                overlay.classList.remove('show');
+            }, 2500);
+        }
 
         const soundBtn = document.getElementById('soundBtn');
         soundBtn.addEventListener('click', () => {
@@ -2030,6 +2148,8 @@
                 updateBalanceOnBot(winAmount);
                 resultTextEl.textContent = `🎉 WIN! +${formatNumber(winAmount)} (x${multiplier})`;
                 resultTextEl.className = 'result-text win'; soundWin();
+            if (resultNum === 0) showBigWin('ZERO! ×36!', 'green');
+            else if (resultNum === selectedNumber && multiplier === 36) showBigWin('LUCKY NUMBER!', 'gold');
             } else {
                 resultTextEl.textContent = `😢 Lose -${formatNumber(betAmount)}`;
                 resultTextEl.className = 'result-text lose'; soundLose();
@@ -2106,6 +2226,9 @@
                 winAmount = bet * mult;
                 resultEl.textContent = `🎉 JACKPOT! ${result.join(' ')} x${mult} → +${formatNumber(winAmount)}!`;
                 resultEl.className = 'result-text win'; soundJackpot();
+                if (result[0] === '7️⃣') showBigWin('JACKPOT! 777!', 'gold');
+                else if (result[0] === '💎') showBigWin('MEGA WIN!', 'blue');
+                else if (result[0] === '🍒') showBigWin('TRIPLE CHERRY!', 'red');
             } else if (result[0] === result[1] || result[1] === result[2] || result[0] === result[2]) {
                 winAmount = bet * 2;
                 resultEl.textContent = `✨ ${result.join(' ')} x2 → +${formatNumber(winAmount)}!`;
@@ -2280,7 +2403,7 @@
             document.getElementById('minesMult').textContent = '×' + minesGame.mult.toFixed(2);
             document.getElementById('minesCashout').textContent = formatNumber(cashout);
             document.getElementById('minesCashoutBtn').disabled = false;
-            if (minesGame.opened.size === minesGame.safeTotal) cashoutMines();
+            if (minesGame.opened.size === minesGame.safeTotal) { showBigWin('CLEAN SWEEP!', 'green'); cashoutMines(); }
         }
 
         function cashoutMines() {
@@ -2476,6 +2599,8 @@
             status.style.color = '#4ecca3';
             mult.className = 'crash-multiplier high';
             soundWin();
+            if (crashMultiplier >= 10) showBigWin('TO THE MOON!', 'purple');
+            else if (crashMultiplier >= 5) showBigWin('BIG WIN!', 'gold');
             addHistory('crash', crashBetAmount, winAmount, `cashout ×${crashMultiplier.toFixed(2)}`);
             tryJackpot(crashBetAmount);
             crashInterval = setInterval(() => {
